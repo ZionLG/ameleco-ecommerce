@@ -5,6 +5,7 @@ import "../styles/globals.css";
 
 import { useState } from "react";
 import type { AppProps } from "next/app";
+import { NextUIProvider } from "@nextui-org/react";
 import { SessionContextProvider } from "@supabase/auth-helpers-react";
 
 import { api } from "~/utils/api";
@@ -20,7 +21,9 @@ function MyApp({
       supabaseClient={supabaseClient}
       initialSession={pageProps.initialSession}
     >
-      <Component {...pageProps} />
+      <NextUIProvider>
+        <Component {...pageProps} />
+      </NextUIProvider>
     </SessionContextProvider>
   );
 }
