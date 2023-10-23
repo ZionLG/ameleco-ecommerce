@@ -6,15 +6,11 @@ import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 
 import { api } from "~/utils/api";
 import type { RouterOutputs } from "~/utils/api";
+import Header from "~/components/Header";
 import ProductSearch from "~/components/ProductSearch";
+import { ThemeToggle } from "~/components/ThemeToggle";
 
 export default function HomePage() {
-  const postQuery = api.post.all.useQuery();
-
-  const deletePostMutation = api.post.delete.useMutation({
-    onSettled: () => postQuery.refetch(),
-  });
-
   return (
     <>
       <Head>
@@ -25,16 +21,8 @@ export default function HomePage() {
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="flex h-screen flex-col  bg-white text-zinc-900">
-        <header className="flex flex-col gap-3 p-5">
-          <div className="flex">
-            <span className="text-5xl font-bold uppercase italic text-[#0070C0]">
-              AMELECO
-            </span>
-            <ProductSearch data={[]} />
-          </div>
-          <nav></nav>
-        </header>
+      <Header />
+      <main className="flex h-screen flex-col  ">
         <div className="container mt-12 flex flex-col items-center justify-center gap-4 px-4 py-8"></div>
       </main>
     </>

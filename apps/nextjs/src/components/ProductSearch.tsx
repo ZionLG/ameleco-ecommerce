@@ -2,6 +2,16 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { Search, X } from "lucide-react";
+
+import { Input } from "./ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
 
 interface SearchProps {
   data: Data[];
@@ -13,6 +23,20 @@ interface Data {
   id: string;
   tumbURL: string;
 }
+export const categories = [
+  {
+    label: "All Categories",
+    value: "all categories",
+  },
+  {
+    label: "Breaker",
+    value: "breaker",
+  },
+  {
+    label: "Cooper",
+    value: "cooper",
+  },
+];
 
 const ProductSearch = ({ data, maxResults = 5 }: SearchProps) => {
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -57,26 +81,50 @@ const ProductSearch = ({ data, maxResults = 5 }: SearchProps) => {
     );
   };
   return (
-    <div className="relative flex flex-col">
-      <div
-        className={`flex bg-white ${
-          filtered.length > 0 ? " rounded-t-md" : " rounded-md"
-        } items-center gap-2 p-2`}
-      >
-        <input
-          className=" rounded-lg border-none bg-white  px-5  text-black"
-          type="text"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+    <div className="relative flex flex-col p-2">
+      <div className={`flex items-center`}>
+        <div className="min-w-fit">
+          <Select defaultValue="all categories">
+            <SelectTrigger className="bg-secondary h-11 rounded-r-none focus:ring-0 focus:ring-offset-0">
+              <SelectValue placeholder="Select a category" />
+            </SelectTrigger>
+            <SelectContent>
+              {categories.map((category) => (
+                <SelectItem key={category.value} value={category.value}>
+                  {category.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="flex  grow">
+          <Input
+            value={searchTerm}
+            placeholder="Search..."
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="h-11 min-w-[12rem] rounded-none border-x-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+          />
+          {searchTerm !== "" && (
+            <X
+              cursor={"pointer"}
+              className="text-primary h-11 w-8 border-y pr-2"
+              onClick={() => setSearchTerm("")}
+            />
+          )}
+        </div>
+        <Search
+          cursor={"pointer"}
+          className="h-11 w-16 rounded-r-md bg-blue-950 p-2 text-white"
         />
-        {/* <MdClear
-          className="text-gray-500 cursor-pointer"
-          onClick={() => setSearchTerm("")}
-          size={25}
-        /> */}
+        {/* {
+          <MdClear
+            className="cursor-pointer text-gray-500"
+            onClick={() => setSearchTerm("")}
+            size={25}
+          /> */}
       </div>
       {filtered.length > 0 && (
-        <div className="absolute top-full z-50 w-full rounded-b bg-white p-2">
+        <div className="absolute top-full z-50 w-full rounded-b bg-white ">
           {filtered.map((v) => formatResult(v))}
         </div>
       )}

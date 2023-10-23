@@ -1,5 +1,6 @@
 import { createBrowserSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import type { Session } from "@supabase/auth-helpers-nextjs";
+import { ThemeProvider } from "next-themes";
 
 import "../styles/globals.css";
 
@@ -21,9 +22,11 @@ function MyApp({
       supabaseClient={supabaseClient}
       initialSession={pageProps.initialSession}
     >
-      <NextUIProvider>
-        <Component {...pageProps} />
-      </NextUIProvider>
+      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <NextUIProvider>
+          <Component {...pageProps} />
+        </NextUIProvider>
+      </ThemeProvider>
     </SessionContextProvider>
   );
 }
