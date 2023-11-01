@@ -1,7 +1,6 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { toast } from "sonner";
 
 import { cn } from "~/utils/utils";
 import RegisterEmailForm from "~/components/RegisterEmailForm";

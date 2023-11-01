@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { useRouter } from "next/router";
-import { Search, X } from "lucide-react";
+import { Search } from "lucide-react";
 
+import type { RouterOutputs } from "~/utils/api";
 import { Input } from "./ui/input";
 import {
   Select,
@@ -14,15 +14,10 @@ import {
 } from "./ui/select";
 
 interface SearchProps {
-  data: Data[];
+  data: NonNullable<RouterOutputs["shop"]["allProducts"]>;
   maxResults?: number;
 }
 
-interface Data {
-  name: string;
-  id: string;
-  tumbURL: string;
-}
 export const categories = [
   {
     label: "All Categories",
@@ -40,13 +35,15 @@ export const categories = [
 
 const ProductSearch = ({ data, maxResults = 5 }: SearchProps) => {
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [filtered, setFiltered] = useState<Data[]>([]);
+  const [filtered, setFiltered] = useState<
+    NonNullable<RouterOutputs["shop"]["allProducts"]>
+  >([]);
   const router = useRouter();
 
   useEffect(() => {
     console.log(searchTerm);
     if (searchTerm.length > 0) {
-      const tempArray = [] as Data[];
+      const tempArray = [] as NonNullable<RouterOutputs["shop"]["allProducts"]>;
       for (let i = 0; i < data.length && tempArray.length <= maxResults; i++) {
         if (data[i]!.name.toLowerCase().includes(searchTerm.toLowerCase())) {
           tempArray.push(data[i]!);
@@ -63,19 +60,28 @@ const ProductSearch = ({ data, maxResults = 5 }: SearchProps) => {
     console.log(filtered);
   }, [filtered]);
 
-  const handleOnSelect = (itemId: string) => {
+  const handleOnSelect = async (itemId: string) => {
     setSearchTerm("");
-    router.push(`/shop/${itemId}`);
+    await router.push(`/shop/${itemId}`);
   };
-  const formatResult = (item: Data) => {
+  const formatResult = (
+    product: NonNullable<RouterOutputs["shop"]["productById"]>,
+  ) => {
     return (
       <div
-        onClick={() => handleOnSelect(item.id)}
-        className="group flex cursor-pointer items-center  gap-10 bg-white p-4"
+        key={product.id}
+        onClick={() => handleOnSelect(product.id)}
+        className="bg-background group flex cursor-pointer items-center gap-10  p-4"
       >
-        <Image alt={item.name} src={item.tumbURL} width={50} height={50} />
-        <div className="flex  grow items-center justify-center self-stretch rounded-md p-2 group-hover:bg-gray-200">
-          <span className="text-center text-black">{item.name}</span>
+        <Image
+          alt={product.name}
+          src={product.avatarUrl}
+          width={50}
+          height={50}
+          className="rounded-md"
+        />
+        <div className="group-hover:bg-secondary  flex grow items-center justify-center self-stretch rounded-md p-2">
+          <span className="text-primary text-center">{product.name}</span>
         </div>
       </div>
     );
@@ -125,7 +131,7 @@ const ProductSearch = ({ data, maxResults = 5 }: SearchProps) => {
           /> */}
       </div>
       {filtered.length > 0 && (
-        <div className="absolute top-full z-50 w-full rounded-b bg-white ">
+        <div className="bg-background absolute right-[1px] top-full z-50 w-full rounded-md p-1">
           {filtered.map((v) => formatResult(v))}
         </div>
       )}

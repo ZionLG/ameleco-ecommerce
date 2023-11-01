@@ -21,7 +21,6 @@ import {
   Lock,
   Mail,
   PhoneCall,
-  ShoppingCart,
   User,
 } from "lucide-react";
 import type { SubmitHandler } from "react-hook-form";

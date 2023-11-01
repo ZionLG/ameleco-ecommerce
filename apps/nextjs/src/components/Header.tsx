@@ -9,6 +9,7 @@ import {
   UserCircle2,
 } from "lucide-react";
 
+import { api } from "~/utils/api";
 import { cn } from "~/utils/utils";
 import HeaderAuth from "./HeaderAuth";
 import HeaderCard from "./HeaderCard";
@@ -16,6 +17,8 @@ import ProductSearch from "./ProductSearch";
 import { buttonVariants } from "./ui/button";
 
 const Header = () => {
+  const { data, error } = api.shop.allProducts.useQuery();
+
   return (
     <header className="flex flex-col gap-3 p-5">
       <div className="flex items-center gap-5">
@@ -24,7 +27,7 @@ const Header = () => {
         </span>
 
         <div className="grow">
-          <ProductSearch data={[]} />
+          <ProductSearch data={data ?? []} />
         </div>
         <HeaderCard
           Icon={PhoneCall}

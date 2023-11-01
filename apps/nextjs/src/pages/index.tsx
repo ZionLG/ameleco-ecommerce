@@ -1,14 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Head from "next/head";
-import Image from "next/image";
-import Link from "next/link";
-import { Popover, PopoverContent, PopoverTrigger } from "@nextui-org/react";
 import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
-import { UserCircle2 } from "lucide-react";
 
-import { api } from "~/utils/api";
-import type { RouterOutputs } from "~/utils/api";
-import Header from "~/components/Header";
 import type { HomeCategoryProps } from "~/components/HomeCategory";
 import HomeCategory from "~/components/HomeCategory";
 import { ThemeToggle } from "~/components/ThemeToggle";
