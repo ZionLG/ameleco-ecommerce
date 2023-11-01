@@ -24,7 +24,7 @@ const Shop = () => {
           <ProductCard product={product} key={product.id} />
         ))}
       </div>
-      <pre> {JSON.stringify(products.data, null, 4)}</pre>
+      {/* <pre> {JSON.stringify(products.data, null, 4)}</pre> */}
     </div>
   );
 };

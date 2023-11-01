@@ -1,13 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import {
-  Clock5,
-  Dot,
-  MapPin,
-  PhoneCall,
-  ShoppingCart,
-  UserCircle2,
-} from "lucide-react";
+import { Clock5, MapPin, PhoneCall, ShoppingCart } from "lucide-react";
 
 import { api } from "~/utils/api";
 import { cn } from "~/utils/utils";

@@ -95,8 +95,8 @@ export default function HomePage() {
             })}
           </div>
         </div>
-        <ThemeToggle />
-        <pre> {JSON.stringify(user, null, 4)}</pre>
+        {/* <ThemeToggle />
+        <pre> {JSON.stringify(user, null, 4)}</pre> */}
       </main>
     </>
   );
