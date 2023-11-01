@@ -1,185 +1,103 @@
-import { useState } from "react";
+import { useEffect } from "react";
 import Head from "next/head";
-import Image from "next/image";
-import Link from "next/link";
 import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 
-import { api } from "~/utils/api";
-import type { RouterOutputs } from "~/utils/api";
+import type { HomeCategoryProps } from "~/components/HomeCategory";
+import HomeCategory from "~/components/HomeCategory";
+import { ThemeToggle } from "~/components/ThemeToggle";
+import { Button } from "~/components/ui/button";
+import Accessories from "../../public/Accessories.png";
+import Box from "../../public/Box.png";
+import Breaker from "../../public/Breaker.png";
+import HeatingCooling from "../../public/heating and cooling.png";
+import Lighting from "../../public/Lighting.png";
+import Wires from "../../public/Wires.png";
 
-function PostCard(props: {
-  post: RouterOutputs["post"]["all"][number];
-  onPostDelete?: () => void;
-}) {
-  const { post } = props;
-  return (
-    <div className="flex flex-row rounded-lg bg-white/10 p-4 transition-all hover:scale-[101%]">
-      <Image
-        className="mr-2 self-center rounded"
-        src={post.author?.image ?? ""}
-        alt={`${post.author?.name}'s avatar`}
-        width={64}
-        height={64}
-      />
-      <div className="flex-grow">
-        <h2 className="text-2xl font-bold text-emerald-400">{post.title}</h2>
-        <p className="mt-2 text-sm">{post.content}</p>
-      </div>
-      <div>
-        <button
-          className="cursor-pointer text-sm font-bold uppercase text-emerald-400"
-          onClick={props.onPostDelete}
-        >
-          Delete
-        </button>
-      </div>
-    </div>
-  );
-}
-
-function CreatePostForm() {
-  const utils = api.useContext();
-
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-
-  const { mutate, error } = api.post.create.useMutation({
-    async onSuccess() {
-      setTitle("");
-      setContent("");
-      await utils.post.all.invalidate();
-    },
-  });
-
-  return (
-    <div className="flex w-full max-w-2xl flex-col p-4">
-      <input
-        className="mb-2 rounded bg-white/10 p-2 text-zinc-200"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        placeholder="Title"
-      />
-      {error?.data?.zodError?.fieldErrors.title && (
-        <span className="mb-2 text-red-500">
-          {error.data.zodError.fieldErrors.title}
-        </span>
-      )}
-      <input
-        className="mb-2 rounded bg-white/10 p-2 text-zinc-200"
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
-        placeholder="Content"
-      />
-      {error?.data?.zodError?.fieldErrors.content && (
-        <span className="mb-2 text-red-500">
-          {error.data.zodError.fieldErrors.content}
-        </span>
-      )}
-      <button
-        className="rounded bg-emerald-400 p-2 font-bold text-zinc-900"
-        onClick={() => {
-          mutate({
-            title,
-            content,
-          });
-        }}
-      >
-        Create
-      </button>
-      {error?.data?.code === "UNAUTHORIZED" && (
-        <span className="mt-2 text-red-500">
-          You must be signed in to post.
-        </span>
-      )}
-    </div>
-  );
-}
+const Categories = [
+  {
+    image: HeatingCooling,
+    title: "Heating and Cooling",
+    description: "Fans, Air Conditioners",
+  },
+  {
+    image: Lighting,
+    title: "Lighting",
+    description: "Bulbs, Fixtures",
+  },
+  {
+    image: Breaker,
+    title: "Breaker",
+    description: "Circuit Breaker, Single-pole",
+  },
+  {
+    image: Box,
+    title: "BOX",
+    description: "Metal Box, PVC FS",
+  },
+  {
+    image: Wires,
+    title: "Wires",
+    description: "Cable, Antishort",
+  },
+  {
+    image: Accessories,
+    title: "Accessories",
+    description: "Lock Nut, Extension Ring",
+  },
+] as HomeCategoryProps[];
 
 export default function HomePage() {
-  const postQuery = api.post.all.useQuery();
+  const user = useUser();
+  const supabaseClient = useSupabaseClient();
 
-  const deletePostMutation = api.post.delete.useMutation({
-    onSettled: () => postQuery.refetch(),
-  });
-
+  useEffect(() => {
+    const fetchData = async () => {
+      const { data, error } = await supabaseClient.from("product").select("*");
+      if (error) {
+        console.error(error);
+      } else {
+        console.log("SUPABASE DATA", data);
+      }
+    };
+    void fetchData();
+  }, [supabaseClient]);
   return (
     <>
       <Head>
-        <title>T3 Turbo x Supabase</title>
-        <meta name="description" content="T3 Turbo x Supabase" />
+        <title>Ameleco</title>
+        <meta
+          name="description"
+          content="Best Electrical Wholesaler - near Vancouver, BC - for Residential, Commercial, Automation, Lighting, Fittings. Like Us - Facebook, YouTube, Instagram, Twitter."
+        />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="flex h-screen flex-col items-center bg-zinc-900 text-zinc-200">
-        <div className="container mt-12 flex flex-col items-center justify-center gap-4 px-4 py-8">
-          <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem]">
-            <span className="text-fuchsia-500">T3</span> Turbo x{" "}
-            <span className="text-emerald-400">Supabase</span>
-          </h1>
-          <AuthShowcase />
-
-          <CreatePostForm />
-
-          {postQuery.data ? (
-            <div className="w-full max-w-2xl">
-              {postQuery.data?.length === 0 ? (
-                <span>There are no posts!</span>
-              ) : (
-                <div className="flex h-[40vh] justify-center overflow-y-scroll px-4 text-2xl">
-                  <div className="flex w-full flex-col gap-4">
-                    {postQuery.data?.map((p) => {
-                      return (
-                        <PostCard
-                          key={p.id}
-                          post={p}
-                          onPostDelete={() => deletePostMutation.mutate(p.id)}
-                        />
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-            </div>
-          ) : (
-            <p>Loading...</p>
-          )}
+      <main className=" flex  flex-col">
+        <div className="flex h-[650px] w-full flex-col justify-center gap-4 bg-[url('/electrician.jpg')] bg-center px-40">
+          <div className="flex flex-col ">
+            <span className="text-6xl">Ameleco Electrical Supply</span>
+            <span className="text-4xl">Reliable & Professional</span>
+          </div>
+          <Button className="self-start text-lg">Shop Now</Button>
         </div>
+        <div className="bg-secondary flex flex-col items-center gap-10 py-5">
+          <span className="text-7xl font-semibold">Shop by Categories</span>
+          <div className="flex gap-10">
+            {Categories.map((category) => {
+              return (
+                <div key={category.title}>
+                  <HomeCategory
+                    image={category.image}
+                    title={category.title}
+                    description={category.description}
+                  />
+                </div>
+              );
+            })}
+          </div>
+        </div>
+        {/* <ThemeToggle />
+        <pre> {JSON.stringify(user, null, 4)}</pre> */}
       </main>
     </>
-  );
-}
-
-function AuthShowcase() {
-  const supabase = useSupabaseClient();
-  const user = useUser();
-  const { data: secretMessage } = api.auth.getSecretMessage.useQuery(
-    undefined, // no input
-    { enabled: !!user },
-  );
-
-  return (
-    <div className="flex flex-col items-center justify-center gap-4">
-      {!user && (
-        <Link
-          className="flex items-center gap-1 rounded-lg bg-white/10 px-10 py-3 font-semibold text-zinc-200 no-underline transition hover:bg-white/20"
-          href="/signin"
-        >
-          Sign In
-        </Link>
-      )}
-      {user && (
-        <>
-          <p className="text-center text-2xl text-zinc-200">
-            {user && <span>Logged in as {user?.user_metadata?.name}</span>}
-            {secretMessage && <span> - {secretMessage}</span>}
-          </p>
-          <button
-            className="rounded-lg bg-white/10 px-10 py-3 font-semibold text-zinc-200 no-underline transition hover:bg-white/20"
-            onClick={() => void supabase.auth.signOut()}
-          >
-            Sign Out
-          </button>
-        </>
-      )}
-    </div>
   );
 }
