@@ -29,7 +29,7 @@ function MyApp({
       supabaseClient={supabaseClient}
       initialSession={pageProps.initialSession}
     >
-      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+      <ThemeProvider attribute="class" defaultTheme="white" enableSystem>
         <NextUIProvider>
           <Layout>
             <Component {...pageProps} />
