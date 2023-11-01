@@ -10,27 +10,103 @@ datasource db {
   schemas   = ["auth", "public"]
 }
 
-model Post {
-  id        String   @id @default(cuid())
-  title     String
-  content   String
-  published Boolean  @default(false)
-  author    Profile? @relation(fields: [authorId], references: [id])
-  authorId  String?
+model Profile { 
+  id     String  @id @default(dbgenerated("(uuid_generate_v4())")) @db.Uuid
+  firstName   String @map("first_name")
+  lastName   String @map("last_name")
+  avatarUrl  String? @map("avatar_url")
+  email  String
+  phone String @unique
+  occupation Occupation
+  purchaseFrequency PurchaseFrequency @map("purchase_frequency")
+  userId String  @db.Uuid @map("user_id")
+  additionalInformation String? @map("additional_information")
+  businessType BusinessType? @map("business_type")
+  companyName String? @map("company_name")
+  user   users   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@map("user_profile")
   @@schema("public")
 }
 
-model Profile {
-  id     String  @id @default(cuid())
-  name   String
-  image  String?
-  email  String?
-  userId String  @db.Uuid
-  user   users   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  posts  Post[]
-
+model Pricing {
+  id     String  @id @default(dbgenerated("(uuid_generate_v4())")) @db.Uuid
+  product Product?
+  visitor Float
+  customer Float
+  frequent Float
+  contractor Float
+  professional Float
+  vip Float
+  @@map("pricing")
   @@schema("public")
+}
+
+model Product {
+  id     String  @id @default(dbgenerated("(uuid_generate_v4())")) @db.Uuid
+  name        String
+  description String?
+  price       Pricing @relation(fields: [priceId], references: [id], onDelete: Cascade) 
+  priceId     String @unique @map("price_id") @db.Uuid
+  stock       Int
+  imageUrl    String @map("image_url")
+  avatarUrl   String @map("avatar_url")
+  category    String
+  
+
+  @@map("product")
+  @@schema("public")
+}
+
+enum BusinessType {
+  RESIDENTIAL_RENOVATION
+  RESIDENTIAL_NEW_CONSTRUCTION
+  COMMERCIAL_RENOVATION
+  COMMERCIAL_NEW_CONSTRUCTION
+  @@schema("public")
+  @@map("business_type")
+}
+enum PurchaseFrequency {
+  RARELY
+  MONTHLY
+  BIWEEKLY
+  WEEKLY
+  DAILY
+  PROJECT_BASED
+  @@schema("public")
+  @@map("purchase_frequency")
+}
+
+enum Occupation {
+  HOME_OWNER
+  HANDY_MAN
+  RENOVATION_CONTRACTOR
+  BUILDER
+  GENERAL_CONTRACTOR
+  ELECTRICIAN
+  ELECTRICAL_CONTRACTOR
+  OTHER
+  @@schema("public")
+  @@map("occupation")
+}
+model GroupTemp {
+  group Groups @id
+  @@map("group_temp")
+  @@schema("public")
+}
+enum Groups {
+  VISITOR
+  CUSTOMER
+  FREQUENT
+  CONTRACTOR
+  PROFESSIONAL
+  VIP
+  @@schema("public")
+  @@map("groups")
+
 }
 
 // 

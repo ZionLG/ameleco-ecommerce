@@ -99,18 +99,19 @@ const ProductSearch = ({ data, maxResults = 5 }: SearchProps) => {
         </div>
         <div className="flex  grow">
           <Input
+            type="search"
             value={searchTerm}
             placeholder="Search..."
             onChange={(e) => setSearchTerm(e.target.value)}
             className="h-11 min-w-[12rem] rounded-none border-x-0 focus-visible:ring-0 focus-visible:ring-offset-0"
           />
-          {searchTerm !== "" && (
+          {/* {searchTerm !== "" && (
             <X
               cursor={"pointer"}
               className="text-primary h-11 w-8 border-y pr-2"
               onClick={() => setSearchTerm("")}
             />
-          )}
+          )} */}
         </div>
         <Search
           cursor={"pointer"}

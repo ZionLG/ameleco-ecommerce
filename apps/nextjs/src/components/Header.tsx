@@ -1,8 +1,16 @@
 import React from "react";
 import Link from "next/link";
-import { cn } from "@nextui-org/react";
-import { PhoneCall, ShoppingCart, UserCircle2 } from "lucide-react";
+import {
+  Clock5,
+  Dot,
+  MapPin,
+  PhoneCall,
+  ShoppingCart,
+  UserCircle2,
+} from "lucide-react";
 
+import { cn } from "~/utils/utils";
+import HeaderAuth from "./HeaderAuth";
 import HeaderCard from "./HeaderCard";
 import ProductSearch from "./ProductSearch";
 import { buttonVariants } from "./ui/button";
@@ -28,7 +36,7 @@ const Header = () => {
           ]}
         />
         <HeaderCard
-          Icon={PhoneCall}
+          Icon={Clock5}
           titleText={"When We're Open"}
           branchData={[
             {
@@ -39,7 +47,7 @@ const Header = () => {
           ]}
         />
         <HeaderCard
-          Icon={PhoneCall}
+          Icon={MapPin}
           titleText={"Where We At"}
           branchData={[
             {
@@ -75,15 +83,7 @@ const Header = () => {
           About Us
         </Link>
         <Link
-          href={"/"}
-          className={`${cn(
-            buttonVariants({ variant: "link" }),
-          )} bg-secondary w-36`}
-        >
-          Contact Us
-        </Link>
-        <Link
-          href={"/"}
+          href={"/shop"}
           className={`${cn(
             buttonVariants({ variant: "link" }),
           )} bg-secondary w-36`}
@@ -96,10 +96,26 @@ const Header = () => {
             buttonVariants({ variant: "link" }),
           )} bg-secondary w-36`}
         >
-          FAQ
+          Projects
+        </Link>
+        <Link
+          href={"/"}
+          className={`${cn(
+            buttonVariants({ variant: "link" }),
+          )} bg-secondary w-36`}
+        >
+          Career
+        </Link>
+        <Link
+          href={"/"}
+          className={`${cn(
+            buttonVariants({ variant: "link" }),
+          )} bg-secondary w-36`}
+        >
+          Contact Us
         </Link>
 
-        <UserCircle2 strokeWidth={1} size={36} className="justify-self-end" />
+        <HeaderAuth />
         <ShoppingCart strokeWidth={1} size={36} className="justify-self-end" />
       </nav>
     </header>

@@ -7,7 +7,7 @@
  * The pieces you will need to use are documented accordingly near the end
  */
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
-import type { User } from "@supabase/auth-helpers-nextjs";
+import type { SupabaseClient, User } from "@supabase/auth-helpers-nextjs";
 import { initTRPC, TRPCError } from "@trpc/server";
 import type { CreateNextContextOptions } from "@trpc/server/adapters/next";
 import superjson from "superjson";
@@ -26,6 +26,7 @@ import { prisma } from "@ameleco/db";
  */
 interface CreateContextOptions {
   user: User | null;
+  supabase: SupabaseClient;
 }
 
 /**
@@ -40,6 +41,7 @@ interface CreateContextOptions {
 export const createInnerTRPCContext = (opts: CreateContextOptions) => {
   return {
     user: opts.user,
+    supabase: opts.supabase,
     prisma,
   };
 };
@@ -59,9 +61,10 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
   const user = token
     ? await supabase.auth.getUser(token)
     : await supabase.auth.getUser();
-
+  console.log(user);
   return createInnerTRPCContext({
     user: user.data.user,
+    supabase: supabase,
   });
 };
 

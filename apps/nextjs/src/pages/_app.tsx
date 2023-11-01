@@ -10,12 +10,19 @@ import { NextUIProvider } from "@nextui-org/react";
 import { SessionContextProvider } from "@supabase/auth-helpers-react";
 
 import { api } from "~/utils/api";
+import Layout from "~/components/layout";
+import { env } from "~/env.mjs";
 
 function MyApp({
   Component,
   pageProps,
 }: AppProps<{ initialSession: Session | null }>) {
-  const [supabaseClient] = useState(() => createBrowserSupabaseClient());
+  const [supabaseClient] = useState(() =>
+    createBrowserSupabaseClient({
+      supabaseKey: env.NEXT_PUBLIC_ANON_KEY,
+      supabaseUrl: env.NEXT_PUBLIC_SUPABASE_URL,
+    }),
+  );
 
   return (
     <SessionContextProvider
@@ -24,7 +31,9 @@ function MyApp({
     >
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
         <NextUIProvider>
-          <Component {...pageProps} />
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
         </NextUIProvider>
       </ThemeProvider>
     </SessionContextProvider>
