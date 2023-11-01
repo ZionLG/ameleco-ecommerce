@@ -7,14 +7,22 @@ export const shopRouter = createTRPCRouter({
   productById: publicProcedure
     .input(z.object({ productId: z.string() }))
     .query(async ({ ctx, input }) => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const { data, error } = await ctx.supabase.rpc("get_my_claim", {
-        claim: "AMELECO_group",
-      });
-      if (error) {
-        return;
+      let group;
+
+      if (ctx.user) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        const { data, error } = await ctx.supabase.rpc("get_my_claim", {
+          claim: "AMELECO_group",
+        });
+        if (error) {
+          return;
+        }
+
+        group = data as Groups;
+      } else {
+        group = "VISITOR" as Groups;
       }
-      const group = data as Groups;
+
       return ctx.prisma.product.findUnique({
         where: { id: input.productId },
         include: {
@@ -32,14 +40,21 @@ export const shopRouter = createTRPCRouter({
       });
     }),
   allProducts: publicProcedure.query(async ({ ctx }) => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const { data, error } = await ctx.supabase.rpc("get_my_claim", {
-      claim: "AMELECO_group",
-    });
-    if (error) {
-      return;
+    let group;
+
+    if (ctx.user) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const { data, error } = await ctx.supabase.rpc("get_my_claim", {
+        claim: "AMELECO_group",
+      });
+      if (error) {
+        return;
+      }
+
+      group = data as Groups;
+    } else {
+      group = "VISITOR" as Groups;
     }
-    const group = data as Groups;
     return ctx.prisma.product.findMany({
       include: {
         price: {
