@@ -6,12 +6,18 @@ import "../styles/globals.css";
 
 import { useState } from "react";
 import type { AppProps } from "next/app";
+import { Encode_Sans_Expanded } from "next/font/google";
 import { NextUIProvider } from "@nextui-org/react";
 import { SessionContextProvider } from "@supabase/auth-helpers-react";
 
 import { api } from "~/utils/api";
 import Layout from "~/components/layout";
 import { env } from "~/env.mjs";
+
+const encode_Sans_Expanded = Encode_Sans_Expanded({
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+  subsets: ["latin"],
+});
 
 function MyApp({
   Component,
@@ -32,6 +38,12 @@ function MyApp({
       <ThemeProvider attribute="class" defaultTheme="white" enableSystem>
         <NextUIProvider>
           <Layout>
+            {/* eslint-disable-next-line react/no-unknown-property*/}
+            <style jsx global>{`
+              html {
+                font-family: ${encode_Sans_Expanded.style.fontFamily};
+              }
+            `}</style>
             <Component {...pageProps} />
           </Layout>
         </NextUIProvider>
