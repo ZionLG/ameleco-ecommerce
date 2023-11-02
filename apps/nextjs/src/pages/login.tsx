@@ -8,7 +8,7 @@ import { buttonVariants } from "~/components/ui/button";
 
 const Login = () => {
   return (
-    <div className="flex min-h-screen  flex-col-reverse xl:flex-row">
+    <main className="flex min-h-screen  flex-col-reverse xl:flex-row">
       <div className=" bg-secondary flex shrink-0 flex-col justify-around p-5 md:p-24">
         <Image
           src={"registerlogin.svg"}
@@ -51,7 +51,7 @@ const Login = () => {
           </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 };
 

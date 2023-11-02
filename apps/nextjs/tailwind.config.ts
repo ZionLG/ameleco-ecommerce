@@ -1,4 +1,5 @@
 import { nextui } from "@nextui-org/react";
+import defaultTheme from "tailwindcss/defaultTheme";
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -11,6 +12,11 @@ module.exports = {
     "../../node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
+    screens: {
+      xs: "475px",
+      ...defaultTheme.screens,
+      "3xl": "1800px",
+    },
     container: {
       center: true,
       padding: "2rem",
