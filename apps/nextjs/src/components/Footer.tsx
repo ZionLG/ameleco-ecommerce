@@ -7,7 +7,7 @@ const Footer = () => {
       <div className="flex flex-col flex-nowrap items-center justify-center gap-20 text-center md:flex-row md:flex-wrap md:items-start">
         <div className="flex flex-col items-start gap-2">
           <span className="text-3xl font-semibold ">Contact Us</span>
-          <div className="flex flex-col items-start ">
+          <div className="text-primary flex flex-col items-start">
             <span className="font-semibold">Richmond: (778) 296-2570</span>
             <span className="font-semibold">Burnaby: (604) 570-0867</span>
             <span className="font-semibold">

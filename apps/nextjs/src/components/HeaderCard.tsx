@@ -1,4 +1,3 @@
-import type { ComponentType } from "react";
 import React, { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
@@ -6,13 +5,10 @@ import type { LucideIcon } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuLabel,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
-import { categories } from "./ProductSearch";
 
 interface BranchData {
   data: string;
