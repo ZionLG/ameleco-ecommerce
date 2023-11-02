@@ -3,11 +3,11 @@ import Link from "next/link";
 
 const Footer = () => {
   return (
-    <footer className="bg-secondary flex flex-col justify-around gap-20 px-10 py-20 md:px-20 ">
-      <div className="flex flex-col flex-nowrap items-center justify-center gap-20 text-center md:flex-row md:flex-wrap md:items-start">
-        <div className="flex flex-col items-start gap-2">
+    <footer className="flex flex-col justify-around gap-20 bg-secondary px-10 py-20 md:px-20 ">
+      <div className="flex flex-col flex-nowrap items-center justify-center gap-10  md:flex-row  md:items-start  lg:gap-20">
+        <div className="flex flex-col items-center  gap-2 md:items-start">
           <span className="text-3xl font-semibold ">Contact Us</span>
-          <div className="text-primary flex flex-col items-start">
+          <div className="flex flex-col items-center  text-primary md:items-start">
             <span className="font-semibold">Richmond: (778) 296-2570</span>
             <span className="font-semibold">Burnaby: (604) 570-0867</span>
             <span className="font-semibold">
@@ -15,23 +15,23 @@ const Footer = () => {
             </span>
           </div>
 
-          <span className="text-secondary-foreground text-left">
+          <span className="text-left text-secondary-foreground">
             1952 Kingsway Ave Unit 420,
             <br /> Port Coquitlam, BC V3C 6C2
           </span>
-          <span className="text-secondary-foreground text-left">
+          <span className="text-left text-secondary-foreground">
             4012 Myrtle St, Burnaby,
             <br />
             BC V5C 4G2
           </span>
-          <span className="text-secondary-foreground text-left">
+          <span className="text-left text-secondary-foreground">
             12331 Bridgeport Road Unit
             <br />
             3~4, Richmond, BC V6V 1J4
           </span>
           <span className="text-secondary-foreground">sales@ameleco.com</span>
         </div>
-        <div className="flex flex-col items-start gap-2">
+        <div className="flex flex-col items-center gap-2  md:items-start">
           <div className="text-3xl font-semibold ">Ameleco Catalog</div>
           <Link
             href={"/shop"}
@@ -58,10 +58,8 @@ const Footer = () => {
             Clearances
           </Link>
         </div>
-        <div className="flex flex-col items-start gap-2">
-          <div className="text-secondary-foreground text-3xl font-semibold">
-            Customer Service
-          </div>
+        <div className="flex flex-col items-center  gap-2 md:items-start">
+          <div className=" text-3xl font-semibold">Customer Service</div>
           <Link
             href={"/user/settings"}
             className="text-secondary-foreground underline-offset-4 hover:underline"
@@ -93,7 +91,7 @@ const Footer = () => {
             FAQ
           </Link>
         </div>
-        <div className="flex flex-col items-start gap-2">
+        <div className="flex flex-col items-center  gap-2 md:items-start">
           <div className="text-3xl font-semibold ">Information</div>
           <Link
             href={"/about"}

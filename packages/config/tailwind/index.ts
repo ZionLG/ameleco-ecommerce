@@ -15,7 +15,7 @@ export default {
     screens: {
       xs: "475px",
       ...defaultTheme.screens,
-      "3xl": "1750px",
+      "3xl": "1800px",
     },
     container: {
       center: true,

@@ -72,20 +72,24 @@ export default function HomePage() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className=" flex  flex-col">
-        <div className="flex h-[650px] w-full flex-col justify-center gap-4 bg-[url('/electrician.jpg')] bg-center px-40">
-          <div className="flex flex-col ">
-            <span className="text-foreground text-6xl">
+        <section className="flex h-[650px] w-full flex-col  justify-center gap-4 bg-[url('/electrician.jpg')] bg-center px-5 lg:px-28">
+          <div className="flex flex-col gap-10 text-center lg:gap-0 lg:text-start ">
+            <span className="text-6xl text-secondary-foreground">
               Ameleco Electrical Supply
             </span>
-            <span className="text-4xl">Reliable & Professional</span>
+            <span className="text-4xl text-secondary-foreground">
+              Reliable & Professional
+            </span>
           </div>
-          <Button className="self-start text-lg">Shop Now</Button>
-        </div>
-        <div className="bg-secondary flex flex-col items-center gap-10 py-5">
-          <span className="text-primary text-7xl font-semibold">
+          <Button className="self-center text-lg lg:self-start">
+            Shop Now
+          </Button>
+        </section>
+        <section className="flex flex-col items-center gap-10 bg-secondary py-10">
+          <span className="px-3 text-center text-7xl font-semibold text-primary">
             Shop by Categories
           </span>
-          <div className="flex gap-10">
+          <div className="grid grid-cols-1  gap-10  md:grid-cols-2 lg:grid-cols-3 3xl:grid-cols-6">
             {Categories.map((category) => {
               return (
                 <div key={category.title}>
@@ -98,12 +102,12 @@ export default function HomePage() {
               );
             })}
           </div>
-        </div>
-        <div className="flex flex-col items-center gap-10 p-5">
-          <span className="text-primary text-7xl font-semibold">About Us</span>
-          <div className="flex items-center gap-10">
+        </section>
+        <section className="flex flex-col items-center gap-10 p-5">
+          <span className="text-7xl font-semibold text-primary">About Us</span>
+          <div className="flex flex-col items-center gap-10 lg:flex-row">
             <div className="flex flex-col gap-5">
-              <span className="text-primary text-4xl font-semibold">
+              <span className="text-4xl font-semibold text-primary">
                 Who We Are
               </span>
               <p className="max-w-lg text-lg">
@@ -133,8 +137,63 @@ export default function HomePage() {
               />
             </div>
           </div>
-        </div>
-        <Separator className="my-4" />
+        </section>
+        <Separator className="my-4  w-5/6 self-center" />
+        <section className="flex flex-col items-center gap-10 p-5">
+          <span className="text-4xl font-semibold text-primary">
+            Why Choose Us
+          </span>
+          <div className="flex flex-col gap-10 lg:flex-row">
+            <div className="flex max-w-xs flex-col items-center text-center ">
+              <Image
+                priority
+                src={"building.svg"}
+                height={100}
+                width={100}
+                alt="Buildings"
+              />
+              <span className="font-medium text-secondary-foreground">
+                CONTRIBUTED TO PROJECTS IN DIFFERENT SECTORS
+              </span>
+              <span className="font-semibold">
+                Commercial, residential, industry materials, etc.
+              </span>
+            </div>
+            <div className="flex max-w-xs flex-col items-center text-center ">
+              <Image
+                priority
+                src={"experience.svg"}
+                height={100}
+                width={100}
+                alt="Buildings"
+              />
+              <div className="flex flex-col gap-6">
+                <span className="font-medium text-secondary-foreground">
+                  VAST EXPERIENCE
+                </span>
+                <span className=" font-semibold">20+ years of experience</span>
+              </div>
+            </div>
+            <div className="flex max-w-xs flex-col items-center text-center ">
+              <Image
+                priority
+                src={"location.svg"}
+                height={100}
+                width={100}
+                alt="Buildings"
+                className="p-3"
+              />
+              <div className="flex flex-col gap-6">
+                <span className="font-medium text-secondary-foreground">
+                  BASED IN BRITISH COLUMBIA.
+                </span>
+                <span className=" font-semibold">
+                  3 locations including Richmond, Burnaby, and Port Coquitlam.
+                </span>
+              </div>
+            </div>
+          </div>
+        </section>
       </main>
     </>
   );

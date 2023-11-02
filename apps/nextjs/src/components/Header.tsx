@@ -1,11 +1,13 @@
 import React from "react";
 import Link from "next/link";
-import { Clock5, MapPin, PhoneCall, ShoppingCart } from "lucide-react";
+import { Button } from "@nextui-org/react";
+import { Clock5, MapPin, Menu, PhoneCall, ShoppingCart } from "lucide-react";
 
 import { api } from "~/utils/api";
 import { cn } from "~/utils/utils";
 import HeaderAuth from "./HeaderAuth";
 import HeaderCard from "./HeaderCard";
+import HeaderCart from "./HeaderCart";
 import ProductSearch from "./ProductSearch";
 import { buttonVariants } from "./ui/button";
 
@@ -22,15 +24,22 @@ const Header = () => {
 
   return (
     <header className="flex flex-col gap-3 p-5">
-      <div className="flex items-center gap-5">
-        <span className="text-8xl font-bold uppercase italic text-[#0070C0]">
+      <div className="flex items-center justify-between gap-5 md:justify-center lg:items-baseline">
+        <span className=" text-6xl  font-bold uppercase italic text-[#0070C0]  lg:text-8xl">
           AMELECO
         </span>
-
-        <div className="grow">
+        <Button
+          isIconOnly
+          variant="light"
+          aria-label="Toggle Menu"
+          className="justify-self-end md:hidden"
+        >
+          <Menu />
+        </Button>
+        <div className="invisible hidden grow lg:visible lg:inline-block">
           <ProductSearch data={data ?? []} />
         </div>
-        <div className="3xl:flex hidden">
+        <div className="invisible hidden 3xl:visible 3xl:flex">
           <HeaderCard
             Icon={PhoneCall}
             titleText={"Call Us Today"}
@@ -71,21 +80,24 @@ const Header = () => {
           />
         </div>
       </div>
-      <nav className="flex items-center justify-center gap-3">
+      <div className="inline-block grow lg:invisible lg:hidden">
+        <ProductSearch data={data ?? []} />
+      </div>
+      <nav className="invisible hidden items-center justify-center gap-3 md:visible md:flex">
         {MENU_LIST.map((item) => (
           <Link
             key={item.text}
             href={item.href}
             className={`${cn(
               buttonVariants({ variant: "link" }),
-            )} bg-secondary w-36 font-semibold`}
+            )} w-36 bg-secondary font-semibold`}
           >
             {item.text}
           </Link>
         ))}
 
         <HeaderAuth />
-        <ShoppingCart strokeWidth={1} size={36} className="justify-self-end" />
+        <HeaderCart />
       </nav>
     </header>
   );
