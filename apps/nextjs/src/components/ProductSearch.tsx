@@ -71,7 +71,7 @@ const ProductSearch = ({ data, maxResults = 5 }: SearchProps) => {
       <div
         key={product.id}
         onClick={() => handleOnSelect(product.id)}
-        className="bg-background group/item flex cursor-pointer items-center gap-10  p-4"
+        className="group/item flex cursor-pointer items-center gap-10 bg-background  p-4"
       >
         <Image
           alt={product.name}
@@ -80,8 +80,8 @@ const ProductSearch = ({ data, maxResults = 5 }: SearchProps) => {
           height={50}
           className="rounded-md"
         />
-        <div className="group-hover/item:bg-secondary  flex grow items-center justify-center self-stretch rounded-md p-2">
-          <span className="text-primary text-center">{product.name}</span>
+        <div className="flex  grow items-center justify-center self-stretch rounded-md p-2 group-hover/item:bg-secondary">
+          <span className="text-center text-primary">{product.name}</span>
         </div>
       </div>
     );
@@ -91,7 +91,7 @@ const ProductSearch = ({ data, maxResults = 5 }: SearchProps) => {
       <div className={`flex items-center`}>
         <div className="min-w-fit">
           <Select defaultValue="all categories">
-            <SelectTrigger className="bg-secondary h-11 rounded-r-none font-semibold focus:ring-0 focus:ring-offset-0">
+            <SelectTrigger className="h-11 rounded-r-none bg-secondary font-semibold focus:ring-0 focus:ring-offset-0">
               <SelectValue placeholder="Select a category" />
             </SelectTrigger>
             <SelectContent>
@@ -131,7 +131,7 @@ const ProductSearch = ({ data, maxResults = 5 }: SearchProps) => {
           /> */}
       </div>
       {filtered.length > 0 && (
-        <div className="bg-background absolute right-[1px] top-full z-50  hidden w-full rounded-md p-1 group-focus-within/display:block ">
+        <div className="absolute right-[1px] top-full z-50 hidden  w-full rounded-md bg-background p-1 group-focus-within/display:block ">
           {filtered.map((v) => formatResult(v))}
         </div>
       )}

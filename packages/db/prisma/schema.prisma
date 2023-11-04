@@ -19,7 +19,7 @@ model Profile {
   phone String @unique
   occupation Occupation
   purchaseFrequency PurchaseFrequency @map("purchase_frequency")
-  userId String  @db.Uuid @map("user_id")
+  userId String  @db.Uuid @map("user_id") @unique
   additionalInformation String? @map("additional_information")
   businessType BusinessType? @map("business_type")
   companyName String? @map("company_name")
@@ -48,7 +48,7 @@ model Pricing {
 
 model Product {
   id     String  @id @default(dbgenerated("(uuid_generate_v4())")) @db.Uuid
-  name        String
+  name        String @unique
   description String?
   price       Pricing @relation(fields: [priceId], references: [id], onDelete: Cascade) 
   priceId     String @unique @map("price_id") @db.Uuid
@@ -66,7 +66,7 @@ model Product {
 model Cart {
   id     String  @id @default(dbgenerated("(uuid_generate_v4())")) @db.Uuid
   userId     String @db.Uuid @map("user_id") @unique
-  user       Profile     @relation(fields: [userId], references: [id])
+  user       Profile     @relation(fields: [userId], references: [userId])
   items      CartItem[]
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)

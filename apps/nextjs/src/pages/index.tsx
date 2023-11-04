@@ -1,11 +1,14 @@
 import { useEffect } from "react";
 import Head from "next/head";
 import Image from "next/image";
+import Link from "next/link";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 
+import { cn } from "~/utils/utils";
+import AboutUsSection from "~/components/AboutUsSection";
 import type { HomeCategoryProps } from "~/components/HomeCategory";
 import HomeCategory from "~/components/HomeCategory";
-import { Button } from "~/components/ui/button";
+import { Button, buttonVariants } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
 import Accessories from "../../public/Accessories.png";
 import Box from "../../public/Box.png";
@@ -103,43 +106,57 @@ export default function HomePage() {
             })}
           </div>
         </section>
+        <AboutUsSection />
+        <Separator className="my-4  w-5/6 self-center" />
         <section className="flex flex-col items-center gap-10 p-5">
-          <span className="text-7xl font-semibold text-primary">About Us</span>
-          <div className="flex flex-col items-center gap-10 lg:flex-row">
-            <div className="flex flex-col gap-5">
-              <span className="text-4xl font-semibold text-primary">
-                Who We Are
+          <span className="text-4xl font-semibold text-primary">
+            Supplying British Columbia for 20+ years!
+          </span>
+          <div className="grid grid-cols-3 ">
+            <Image
+              alt="Thanksgiving Promotion"
+              src={"Thanksgiving.svg"}
+              width={275}
+              height={300}
+            />
+            <Image alt="Careers" src={"CAREERS.svg"} width={275} height={300} />
+            <Image
+              alt="Contact us"
+              src={"contactus.svg"}
+              width={275}
+              height={300}
+            />
+            <div className="flex w-[275px] flex-col gap-2 border p-3">
+              <span className="text-2xl font-semibold text-primary">
+                THANKSGIVING PROMOTION
               </span>
-              <p className="max-w-lg text-lg">
-                Ameleco Electric Supply has electrical stores near Vancouver in
-                Richmond, Port Coquitlam and Burnaby. Shop at your nearest
-                Ameleco Electrical Store today! <br />
-                <br />
-                Ameleco is one of the largest electrical wholesale suppliers
-                providing a wide range of products for residential electricians
-                and commercial contractors in BC. We carry comprehensive product
-                solutions for Lighting, Datacom, Wire & Cable, Power Management
-                and Electrical Supplies. <br />
-                <br />
-                In addition to our online store, we have a variety of choice
-                throughout Canada where our customers can find what they need
-                for their specific electrical projects as well as product
-                knowledge and expertise from our staff.
+              <p>
+                To express our sincere gratitude, we`re launching a special sale
+                from Thanksgiving Day October 9th until October 31st for your
+                coming projects.
               </p>
             </div>
-            <div>
-              <Image
-                priority
-                src={"about.svg"}
-                height={300}
-                width={300}
-                alt="Visit us 10535 120 ST, SURREY"
-              />
+            <div className="flex w-[275px] flex-col gap-2 border p-3">
+              <span className="text-2xl font-semibold text-primary">
+                CAREERS
+              </span>
+              <p>
+                We`re always looking for fresh blood! See career opportunities
+                at Ameleco today.
+              </p>
+            </div>
+            <div className="flex w-[275px] flex-col gap-2 border p-3">
+              <span className="text-2xl font-semibold text-primary">
+                CONTACT US
+              </span>
+              <p>
+                Got any questions or want to chat with us further? Contact us by
+                email or by phone.
+              </p>
             </div>
           </div>
         </section>
-        <Separator className="my-4  w-5/6 self-center" />
-        <section className="flex flex-col items-center gap-10 p-5">
+        <section className="mb-10 flex flex-col items-center gap-10 p-5">
           <span className="text-4xl font-semibold text-primary">
             Why Choose Us
           </span>
@@ -192,6 +209,25 @@ export default function HomePage() {
                 </span>
               </div>
             </div>
+          </div>
+        </section>
+        <section className="flex text-xl">
+          <div className="flex grow flex-col items-center justify-center gap-3 bg-secondary p-16 ">
+            <span>Create Account to Shop Online</span>
+            <Link href={"register"} className={`${cn(buttonVariants())}`}>
+              Create Account
+            </Link>
+          </div>
+          <div className="flex grow flex-col items-center justify-center gap-3 bg-[#343434] p-16 text-primary-foreground">
+            <span>Find Items You Need</span>
+            <Link
+              href={"shop"}
+              className={`${cn(
+                buttonVariants({ variant: "ghost" }),
+              )} bg-secondary-foreground`}
+            >
+              Shop Now
+            </Link>
           </div>
         </section>
       </main>
