@@ -1,19 +1,8 @@
 import React from "react";
 import { signal } from "@preact/signals-react";
-import {
-  ChevronDown,
-  Clock5,
-  MapPin,
-  PhoneCall,
-} from "lucide-react";
+import { Clock5, MapPin, PhoneCall } from "lucide-react";
 
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuTrigger,
-} from "~/components/ui/dropdown-menu";
+import ChangeBranch from "./ChangeBranch";
 import HeaderCard from "./HeaderCard";
 
 export const Branch = signal(
@@ -26,37 +15,7 @@ const Branches = () => {
   return (
     <div className="invisible hidden items-center 3xl:visible 3xl:flex 3xl:flex-col">
       <span>{Branch.value}</span>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <div className="flex cursor-pointer items-center gap-1">
-            <span className="text-sm underline">Change Branch</span>
-            <ChevronDown className=" h-4 w-4 opacity-50" />
-          </div>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-fit">
-          <DropdownMenuRadioGroup
-            value={Branch.value}
-            onValueChange={(valueBranch) => {
-              console.log(valueBranch);
-              Branch.value = valueBranch as
-                | "Richmond Branch"
-                | "Burnaby Branch"
-                | "Port Coquitlam Branch";
-              console.log(Branch.value);
-            }}
-          >
-            <DropdownMenuRadioItem value={"Richmond Branch"}>
-              Richmond Branch
-            </DropdownMenuRadioItem>
-            <DropdownMenuRadioItem value={"Burnaby Branch"}>
-              Burnaby Branch
-            </DropdownMenuRadioItem>
-            <DropdownMenuRadioItem value={"Port Coquitlam Branch"}>
-              Port Coquitlam Branch
-            </DropdownMenuRadioItem>
-          </DropdownMenuRadioGroup>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <ChangeBranch />
       <div className="flex">
         <HeaderCard
           Icon={PhoneCall}
