@@ -1,4 +1,4 @@
-import { createBrowserSupabaseClient } from "@supabase/auth-helpers-nextjs";
+import { createPagesBrowserClient } from "@supabase/auth-helpers-nextjs";
 import type { Session } from "@supabase/auth-helpers-nextjs";
 import { ThemeProvider } from "next-themes";
 
@@ -24,7 +24,7 @@ function MyApp({
   pageProps,
 }: AppProps<{ initialSession: Session | null }>) {
   const [supabaseClient] = useState(() =>
-    createBrowserSupabaseClient({
+    createPagesBrowserClient({
       supabaseKey: env.NEXT_PUBLIC_ANON_KEY,
       supabaseUrl: env.NEXT_PUBLIC_SUPABASE_URL,
     }),
