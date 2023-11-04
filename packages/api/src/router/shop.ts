@@ -4,6 +4,19 @@ import { z } from "zod";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const shopRouter = createTRPCRouter({
+  createCart: protectedProcedure.mutation(async ({ ctx }) => {
+    await ctx.prisma.cart.create({
+      data: { userId: ctx.user.id },
+    });
+  }),
+  getCart: protectedProcedure.query(async ({ ctx }) => {
+    const cart = await ctx.prisma.cart.findUnique({
+      where: { userId: ctx.user.id },
+      include: { items: true },
+    });
+
+    return cart;
+  }),
   productById: publicProcedure
     .input(z.object({ productId: z.string() }))
     .query(async ({ ctx, input }) => {

@@ -3,6 +3,7 @@ import Image from "next/image";
 
 import { api } from "~/utils/api";
 import ProductCard from "~/components/ProductCard";
+import { Button } from "~/components/ui/button";
 
 const Shop = () => {
   const products = api.shop.allProducts.useQuery();
@@ -24,6 +25,7 @@ const Shop = () => {
           <ProductCard product={product} key={product.id} />
         ))}
       </div>
+
       {/* <pre> {JSON.stringify(products.data, null, 4)}</pre> */}
     </main>
   );

@@ -19,11 +19,12 @@ model Profile {
   phone String @unique
   occupation Occupation
   purchaseFrequency PurchaseFrequency @map("purchase_frequency")
-  userId String  @db.Uuid @map("user_id")
+  userId String  @db.Uuid @map("user_id") @unique
   additionalInformation String? @map("additional_information")
   businessType BusinessType? @map("business_type")
   companyName String? @map("company_name")
   user   users   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cart Cart?
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
@@ -47,7 +48,7 @@ model Pricing {
 
 model Product {
   id     String  @id @default(dbgenerated("(uuid_generate_v4())")) @db.Uuid
-  name        String
+  name        String @unique
   description String?
   price       Pricing @relation(fields: [priceId], references: [id], onDelete: Cascade) 
   priceId     String @unique @map("price_id") @db.Uuid
@@ -55,11 +56,43 @@ model Product {
   imageUrl    String @map("image_url")
   avatarUrl   String @map("avatar_url")
   category    String
-  
+  cartItems CartItem[]
 
   @@map("product")
   @@schema("public")
 }
+
+
+model Cart {
+  id     String  @id @default(dbgenerated("(uuid_generate_v4())")) @db.Uuid
+  userId     String @db.Uuid @map("user_id") @unique
+  user       Profile     @relation(fields: [userId], references: [userId])
+  items      CartItem[]
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@schema("public")
+  @@map("cart")
+
+}
+
+
+model CartItem {
+  id     String  @id @default(dbgenerated("(uuid_generate_v4())")) @db.Uuid
+  cartId      String @map("cart_id") @db.Uuid
+  cart        Cart     @relation(fields: [cartId], references: [id])
+  productId   String @db.Uuid @map("product_id")
+  product     Product  @relation(fields: [productId], references: [id])
+  quantity    Int
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  
+
+  @@map("cart_item")
+  @@schema("public")
+}
+
 
 enum BusinessType {
   RESIDENTIAL_RENOVATION
