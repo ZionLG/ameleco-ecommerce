@@ -72,7 +72,7 @@ export default function HomePage() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className=" flex  flex-col">
-        <section className="flex h-[650px] w-full flex-col  justify-center gap-4 bg-[url('/electrician.jpg')] bg-center px-5 lg:px-28">
+        <section className="flex h-[650px] w-full flex-col  justify-center gap-4 bg-[url('/electrician.jpg')] bg-cover bg-center bg-no-repeat px-5 lg:px-28">
           <div className="flex flex-col gap-10 text-center lg:gap-0 lg:text-start ">
             <span className="text-6xl text-secondary-foreground">
               Ameleco Electrical Supply

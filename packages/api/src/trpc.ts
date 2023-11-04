@@ -6,7 +6,7 @@
  * tl;dr - this is where all the tRPC server stuff is created and plugged in.
  * The pieces you will need to use are documented accordingly near the end
  */
-import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
+import { createPagesServerClient } from "@supabase/auth-helpers-nextjs";
 import type { SupabaseClient, User } from "@supabase/auth-helpers-nextjs";
 import { initTRPC, TRPCError } from "@trpc/server";
 import type { CreateNextContextOptions } from "@trpc/server/adapters/next";
@@ -52,7 +52,7 @@ export const createInnerTRPCContext = (opts: CreateContextOptions) => {
  * @link https://trpc.io/docs/context
  */
 export const createTRPCContext = async (opts: CreateNextContextOptions) => {
-  const supabase = createServerSupabaseClient(opts);
+  const supabase = createPagesServerClient(opts);
 
   // React Native will pass their token through headers,
   // browsers will have the session cookie set
@@ -61,7 +61,6 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
   const user = token
     ? await supabase.auth.getUser(token)
     : await supabase.auth.getUser();
-  console.log(user);
   return createInnerTRPCContext({
     user: user.data.user,
     supabase: supabase,
