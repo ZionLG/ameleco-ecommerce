@@ -2,6 +2,7 @@ import React from "react";
 import Image from "next/image";
 
 import { Branch } from "~/components/Branches";
+import ChangeBranch from "./ChangeBranch";
 
 const AboutUsSection = () => {
   return (
@@ -29,7 +30,8 @@ const AboutUsSection = () => {
             expertise from our staff.
           </p>
         </div>
-        <div>
+        <div className="flex flex-col items-center gap-3">
+          <ChangeBranch />
           {Branch.value === "Richmond Branch" && (
             <Image
               priority

@@ -112,47 +112,58 @@ export default function HomePage() {
           <span className="text-4xl font-semibold text-primary">
             Supplying British Columbia for 20+ years!
           </span>
-          <div className="grid grid-cols-3 ">
-            <Image
-              alt="Thanksgiving Promotion"
-              src={"Thanksgiving.svg"}
-              width={275}
-              height={300}
-            />
-            <Image alt="Careers" src={"CAREERS.svg"} width={275} height={300} />
-            <Image
-              alt="Contact us"
-              src={"contactus.svg"}
-              width={275}
-              height={300}
-            />
-            <div className="flex w-[275px] flex-col gap-2 border p-3">
-              <span className="text-2xl font-semibold text-primary">
-                THANKSGIVING PROMOTION
-              </span>
-              <p>
-                To express our sincere gratitude, we`re launching a special sale
-                from Thanksgiving Day October 9th until October 31st for your
-                coming projects.
-              </p>
+          <div className="grid grid-rows-3 lg:grid-cols-3 lg:grid-rows-1 ">
+            <div>
+              <Image
+                alt="Thanksgiving Promotion"
+                src={"Thanksgiving.svg"}
+                width={275}
+                height={300}
+              />
+              <div className="flex h-64 w-[275px] flex-col gap-2 border p-3">
+                <span className="text-2xl font-semibold text-primary">
+                  THANKSGIVING PROMOTION
+                </span>
+                <p>
+                  To express our sincere gratitude, we`re launching a special
+                  sale from Thanksgiving Day October 9th until October 31st for
+                  your coming projects.
+                </p>
+              </div>
             </div>
-            <div className="flex w-[275px] flex-col gap-2 border p-3">
-              <span className="text-2xl font-semibold text-primary">
-                CAREERS
-              </span>
-              <p>
-                We`re always looking for fresh blood! See career opportunities
-                at Ameleco today.
-              </p>
+            <div>
+              <Image
+                alt="Careers"
+                src={"CAREERS.svg"}
+                width={275}
+                height={300}
+              />
+              <div className="flex h-64 w-[275px] flex-col gap-2 border p-3 lg:border-y">
+                <span className="text-2xl font-semibold text-primary">
+                  CAREERS
+                </span>
+                <p>
+                  We`re always looking for fresh blood! See career opportunities
+                  at Ameleco today.
+                </p>
+              </div>
             </div>
-            <div className="flex w-[275px] flex-col gap-2 border p-3">
-              <span className="text-2xl font-semibold text-primary">
-                CONTACT US
-              </span>
-              <p>
-                Got any questions or want to chat with us further? Contact us by
-                email or by phone.
-              </p>
+            <div>
+              <Image
+                alt="Contact us"
+                src={"contactus.svg"}
+                width={275}
+                height={300}
+              />
+              <div className="flex h-64 w-[275px] flex-col gap-2 border p-3">
+                <span className="text-2xl font-semibold text-primary">
+                  CONTACT US
+                </span>
+                <p>
+                  Got any questions or want to chat with us further? Contact us
+                  by email or by phone.
+                </p>
+              </div>
             </div>
           </div>
         </section>

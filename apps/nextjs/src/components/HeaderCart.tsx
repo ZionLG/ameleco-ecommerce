@@ -10,15 +10,7 @@ import { ShoppingCart } from "lucide-react";
 
 import { api } from "~/utils/api";
 import { cn } from "~/utils/utils";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "~/components/ui/dropdown-menu";
-import { Button, buttonVariants } from "./ui/button";
+import { buttonVariants } from "./ui/button";
 
 const HeaderCart = () => {
   const [isOpen, setIsOpen] = React.useState(false);

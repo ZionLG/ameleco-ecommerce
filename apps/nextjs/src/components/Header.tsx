@@ -1,7 +1,5 @@
 import React from "react";
 import Link from "next/link";
-import { Button } from "@nextui-org/react";
-import { Menu } from "lucide-react";
 
 import { api } from "~/utils/api";
 import { cn } from "~/utils/utils";
@@ -9,6 +7,7 @@ import Branches from "./Branches";
 import HeaderAuth from "./HeaderAuth";
 import HeaderCart from "./HeaderCart";
 import ProductSearch from "./ProductSearch";
+import Sidebar from "./Sidebar";
 import { buttonVariants } from "./ui/button";
 
 const MENU_LIST = [
@@ -28,14 +27,7 @@ const Header = () => {
         <span className=" text-6xl  font-bold uppercase italic text-[#0070C0]  lg:text-8xl">
           AMELECO
         </span>
-        <Button
-          isIconOnly
-          variant="light"
-          aria-label="Toggle Menu"
-          className="justify-self-end md:hidden"
-        >
-          <Menu />
-        </Button>
+        <Sidebar MENU_LIST={MENU_LIST} />
         <div className="invisible hidden grow lg:visible lg:inline-block">
           <ProductSearch data={data ?? []} />
         </div>
