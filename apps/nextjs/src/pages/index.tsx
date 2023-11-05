@@ -84,12 +84,17 @@ export default function HomePage() {
               Reliable & Professional
             </span>
           </div>
-          <Button className="self-center text-lg lg:self-start">
+          <Link
+            href={"shop"}
+            className={`${cn(
+              buttonVariants({ size: "lg" }),
+            )} self-center lg:self-start`}
+          >
             Shop Now
-          </Button>
+          </Link>
         </section>
         <section className="flex flex-col items-center gap-10 bg-secondary py-10">
-          <span className="px-3 text-center text-7xl font-semibold text-primary">
+          <span className="px-3 text-center text-5xl font-semibold text-primary md:text-7xl">
             Shop by Categories
           </span>
           <div className="grid grid-cols-1  gap-10  md:grid-cols-2 lg:grid-cols-3 3xl:grid-cols-6">
@@ -222,7 +227,7 @@ export default function HomePage() {
             </div>
           </div>
         </section>
-        <section className="flex text-xl">
+        <section className="flex flex-col text-xl sm:flex-row">
           <div className="flex grow flex-col items-center justify-center gap-3 bg-secondary p-16 ">
             <span>Create Account to Shop Online</span>
             <Link href={"register"} className={`${cn(buttonVariants())}`}>

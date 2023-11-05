@@ -91,7 +91,7 @@ const ProductSearch = ({ data, maxResults = 5 }: SearchProps) => {
       <div className={`flex items-center`}>
         <div className="min-w-fit">
           <Select defaultValue="all categories">
-            <SelectTrigger className="h-11 rounded-r-none bg-secondary font-semibold focus:ring-0 focus:ring-offset-0">
+            <SelectTrigger className="h-11 rounded-r-none bg-secondary text-xs font-semibold focus:ring-0 focus:ring-offset-0 md:text-medium">
               <SelectValue placeholder="Select a category" />
             </SelectTrigger>
             <SelectContent>
@@ -109,7 +109,7 @@ const ProductSearch = ({ data, maxResults = 5 }: SearchProps) => {
             value={searchTerm}
             placeholder="Search..."
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="h-11 min-w-[12rem] rounded-none border-x-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+            className="h-11 rounded-none border-x-0 focus-visible:ring-0 focus-visible:ring-offset-0 md:min-w-[12rem]"
           />
           {/* {searchTerm !== "" && (
             <X
