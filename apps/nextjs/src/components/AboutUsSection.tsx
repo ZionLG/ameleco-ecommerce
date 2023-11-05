@@ -7,7 +7,9 @@ import ChangeBranch from "./ChangeBranch";
 const AboutUsSection = () => {
   return (
     <section className="flex flex-col items-center gap-10 p-5">
-      <span className="text-7xl font-semibold text-primary">About Us</span>
+      <span className="text-5xl font-semibold text-primary md:text-7xl">
+        About Us
+      </span>
       <div className="flex flex-col items-center gap-10 lg:flex-row">
         <div className="flex flex-col gap-5">
           <span className="text-4xl font-semibold text-primary">

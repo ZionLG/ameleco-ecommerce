@@ -24,7 +24,7 @@ const Header = () => {
   return (
     <header className="flex flex-col gap-3 p-5">
       <div className="flex items-center justify-between gap-5 md:justify-center lg:items-center">
-        <span className=" text-6xl  font-bold uppercase italic text-[#0070C0]  lg:text-8xl">
+        <span className=" text-5xl  font-bold uppercase italic text-[#0070C0]  lg:text-8xl">
           AMELECO
         </span>
         <Sidebar MENU_LIST={MENU_LIST} />
@@ -36,15 +36,15 @@ const Header = () => {
       <div className="inline-block grow lg:invisible lg:hidden">
         <ProductSearch data={data ?? []} />
       </div>
-      <nav className="container invisible hidden items-center gap-3 md:visible md:flex">
-        <div className="flex grow justify-center gap-3">
+      <nav className="container invisible hidden items-center gap-3 md:visible md:flex ">
+        <div className="flex  grow justify-center gap-3">
           {MENU_LIST.map((item) => (
             <Link
               key={item.text}
               href={item.href}
               className={`${cn(
                 buttonVariants({ variant: "link" }),
-              )} w-36 bg-secondary font-semibold`}
+              )} w-24 bg-secondary font-semibold lg:w-36`}
             >
               {item.text}
             </Link>
