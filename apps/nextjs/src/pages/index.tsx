@@ -121,7 +121,7 @@ export default function HomePage() {
             <div>
               <Image
                 alt="Thanksgiving Promotion"
-                src={"Thanksgiving.svg"}
+                src={"/Thanksgiving.jpg"}
                 width={275}
                 height={300}
               />
@@ -139,7 +139,7 @@ export default function HomePage() {
             <div>
               <Image
                 alt="Careers"
-                src={"CAREERS.svg"}
+                src={"/CAREERS.jpg"}
                 width={275}
                 height={300}
               />
@@ -156,7 +156,7 @@ export default function HomePage() {
             <div>
               <Image
                 alt="Contact us"
-                src={"contactus.svg"}
+                src={"/contactus.jpg"}
                 width={275}
                 height={300}
               />

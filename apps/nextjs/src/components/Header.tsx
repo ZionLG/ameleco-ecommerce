@@ -22,7 +22,7 @@ const Header = () => {
   const { data } = api.shop.allProducts.useQuery();
 
   return (
-    <header className="flex flex-col gap-3 p-5">
+    <header className="sticky top-0 z-50 flex flex-col gap-3 bg-background p-5">
       <div className="flex items-center justify-between gap-5 md:justify-center lg:items-center">
         <span className=" text-5xl  font-bold uppercase italic text-[#0070C0]  lg:text-8xl">
           AMELECO
