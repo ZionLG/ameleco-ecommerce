@@ -86,7 +86,10 @@ const ProductPage = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
               Price:
               <span className="text-xl font-semibold ">
                 {Object.keys(productData.price).map(function (key) {
-                  if (key.toUpperCase() === user?.app_metadata.AMELECO_group)
+                  if (
+                    key.toUpperCase() === user?.app_metadata.AMELECO_group ||
+                    user == null
+                  )
                     return (
                       "$" +
                       productData.price[key as keyof typeof productData.price]

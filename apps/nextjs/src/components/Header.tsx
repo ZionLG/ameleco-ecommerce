@@ -1,6 +1,7 @@
 import React from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import { useUser } from "@supabase/auth-helpers-react";
 import { ShoppingCart, UserCircle2 } from "lucide-react";
 
 import { cn } from "~/utils/utils";
@@ -25,6 +26,8 @@ const MENU_LIST = [
 ];
 
 const Header = () => {
+  const user = useUser();
+
   return (
     <header className="sticky top-0 z-50 flex flex-col gap-3 bg-background p-5">
       <div className="flex items-center justify-between gap-5 md:justify-center lg:items-center">
@@ -57,7 +60,7 @@ const Header = () => {
 
         <div className="flex  justify-end gap-2">
           <DynamicHeaderAuth />
-          <DynamicHeaderCart />
+          {user && <DynamicHeaderCart />}
         </div>
       </nav>
     </header>
