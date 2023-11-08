@@ -34,7 +34,10 @@ const ProductCard = ({ product }: ProductCardProps) => {
           <div className=" flex">
             <span className="text-xl text-default-500 ">
               {Object.keys(product.price).map(function (key) {
-                if (key.toUpperCase() === user?.app_metadata.AMELECO_group)
+                if (
+                  key.toUpperCase() === user?.app_metadata.AMELECO_group ||
+                  user == null
+                )
                   return "$" + product.price[key as keyof typeof product.price];
 
                 return <Spinner key={key} size="sm" />;
