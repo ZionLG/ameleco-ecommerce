@@ -1,6 +1,12 @@
 // Importing env files here to validate on build
 import "./src/env.mjs";
 
+import withBundleAnalyzer from "@next/bundle-analyzer";
+
+const bundleAnalyzer = withBundleAnalyzer({
+  enabled: process.env.ANALYZE === "true",
+});
+
 /** @type {import("next").NextConfig} */
 const config = {
   reactStrictMode: true,
@@ -12,4 +18,4 @@ const config = {
   images: { remotePatterns: [{ hostname: "ameleco.myshopify.com" }] },
 };
 
-export default config;
+export default bundleAnalyzer(config);

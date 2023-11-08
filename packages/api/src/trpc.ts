@@ -26,7 +26,7 @@ import { prisma } from "@ameleco/db";
  */
 interface CreateContextOptions {
   user: User | null;
-  supabase: SupabaseClient;
+  supabase: SupabaseClient | null;
 }
 
 /**

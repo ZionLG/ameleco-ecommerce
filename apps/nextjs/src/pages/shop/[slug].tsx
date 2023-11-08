@@ -1,24 +1,31 @@
 import React, { useState } from "react";
+import type {
+  GetStaticPaths,
+  GetStaticPropsContext,
+  InferGetStaticPropsType,
+} from "next";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { BreadcrumbItem, Breadcrumbs, Spinner } from "@nextui-org/react";
+import { createServerSideHelpers } from "@trpc/react-query/server";
 import { Dot, Minus, Plus } from "lucide-react";
+import superjson from "superjson";
+
+import { appRouter } from "@ameleco/api";
+import { prisma } from "@ameleco/db";
 
 import { api } from "~/utils/api";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Separator } from "~/components/ui/separator";
 
-const ProductPage = () => {
+const ProductPage = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
+  const { name } = props;
+
   const router = useRouter();
-  const product = api.shop.productByName.useQuery(
-    {
-      productName: decodeURIComponent(router.query.slug as string),
-    },
-    {
-      enabled: router.query.slug != null,
-    },
-  );
+  const product = api.shop.productByName.useQuery({
+    productName: name,
+  });
   const [quantity, setQuantity] = useState(1);
   const utils = api.useContext();
   const { mutate, isLoading } = api.shop.addToCart.useMutation({
@@ -26,6 +33,9 @@ const ProductPage = () => {
       void utils.shop.getCart.invalidate();
     },
   });
+  if (router.isFallback || product.status !== "success") {
+    return <div>Loading...</div>;
+  }
   if (product.data) {
     const productData = product.data;
     return (
@@ -153,6 +163,44 @@ const ProductPage = () => {
       <Spinner />
     </main>
   );
+};
+
+export async function getStaticProps(
+  context: GetStaticPropsContext<{ slug: string }>,
+) {
+  const helpers = createServerSideHelpers({
+    router: appRouter,
+    ctx: { prisma: prisma, user: null, supabase: null },
+    transformer: superjson, // optional - adds superjson serialization
+  });
+  const name = context.params?.slug!;
+  // prefetch `post.byId`
+  await helpers.shop.productByName.prefetch({ productName: name });
+  return {
+    props: {
+      trpcState: helpers.dehydrate(),
+      name,
+    },
+    revalidate: 1,
+  };
+}
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const posts = await prisma.product.findMany({
+    select: {
+      name: true,
+    },
+  });
+
+  return {
+    paths: posts.map((post) => ({
+      params: {
+        slug: encodeURIComponent(post.name),
+      },
+    })),
+    // https://nextjs.org/docs/pages/api-reference/functions/get-static-paths#fallback-blocking
+    fallback: true,
+  };
 };
 
 export default ProductPage;
