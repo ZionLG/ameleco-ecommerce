@@ -3,6 +3,7 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { Search } from "lucide-react";
 
+import { api } from "~/utils/api";
 import type { RouterOutputs } from "~/utils/api";
 import { Input } from "./ui/input";
 import {
@@ -14,7 +15,6 @@ import {
 } from "./ui/select";
 
 interface SearchProps {
-  data: NonNullable<RouterOutputs["shop"]["allProducts"]>;
   maxResults?: number;
 }
 
@@ -33,7 +33,9 @@ export const categories = [
   },
 ];
 
-const ProductSearch = ({ data, maxResults = 5 }: SearchProps) => {
+const ProductSearch = ({ maxResults = 5 }: SearchProps) => {
+  const { data } = api.shop.allProducts.useQuery();
+
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [filtered, setFiltered] = useState<
     NonNullable<RouterOutputs["shop"]["allProducts"]>
@@ -42,7 +44,7 @@ const ProductSearch = ({ data, maxResults = 5 }: SearchProps) => {
 
   useEffect(() => {
     console.log(searchTerm);
-    if (searchTerm.length > 0) {
+    if (searchTerm.length > 0 && data) {
       const tempArray = [] as NonNullable<RouterOutputs["shop"]["allProducts"]>;
       for (let i = 0; i < data.length && tempArray.length <= maxResults; i++) {
         if (data[i]!.name.toLowerCase().includes(searchTerm.toLowerCase())) {
