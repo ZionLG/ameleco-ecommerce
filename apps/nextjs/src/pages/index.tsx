@@ -1,14 +1,12 @@
-import { useEffect } from "react";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
 
 import { cn } from "~/utils/utils";
 import AboutUsSection from "~/components/AboutUsSection";
 import type { HomeCategoryProps } from "~/components/HomeCategory";
 import HomeCategory from "~/components/HomeCategory";
-import { Button, buttonVariants } from "~/components/ui/button";
+import { buttonVariants } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
 import Accessories from "../../public/Accessories.png";
 import Box from "../../public/Box.png";
@@ -51,19 +49,6 @@ const Categories = [
 ] as HomeCategoryProps[];
 
 export default function HomePage() {
-  const supabaseClient = useSupabaseClient();
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const { data, error } = await supabaseClient.from("product").select("*");
-      if (error) {
-        console.error(error);
-      } else {
-        console.log("SUPABASE DATA", data);
-      }
-    };
-    void fetchData();
-  }, [supabaseClient]);
   return (
     <>
       <Head>
@@ -121,7 +106,7 @@ export default function HomePage() {
             <div>
               <Image
                 alt="Thanksgiving Promotion"
-                src={"Thanksgiving.svg"}
+                src={"/Thanksgiving.jpg"}
                 width={275}
                 height={300}
               />
@@ -139,7 +124,7 @@ export default function HomePage() {
             <div>
               <Image
                 alt="Careers"
-                src={"CAREERS.svg"}
+                src={"/CAREERS.jpg"}
                 width={275}
                 height={300}
               />
@@ -156,7 +141,7 @@ export default function HomePage() {
             <div>
               <Image
                 alt="Contact us"
-                src={"contactus.svg"}
+                src={"/contactus.jpg"}
                 width={275}
                 height={300}
               />

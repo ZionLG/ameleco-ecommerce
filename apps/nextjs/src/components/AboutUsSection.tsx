@@ -34,33 +34,39 @@ const AboutUsSection = () => {
         </div>
         <div className="flex flex-col items-center gap-3">
           <ChangeBranch />
-          {Branch.value === "Richmond Branch" && (
-            <Image
-              priority
-              src={"RichmondBranch.svg"}
-              height={300}
-              width={300}
-              alt="Visit us 1952 KINGSWAY AVE UNIT 420, RICHMOND"
-            />
-          )}
-          {Branch.value === "Port Coquitlam Branch" && (
-            <Image
-              priority
-              src={"PortBranch.svg"}
-              height={300}
-              width={300}
-              alt="Visit us 12331 BRIDGEPORT ROAD UNIT 3~4, PORT COQUITLAM"
-            />
-          )}
-          {Branch.value === "Burnaby Branch" && (
-            <Image
-              priority
-              src={"BurnabyBranch.svg"}
-              height={300}
-              width={300}
-              alt="Visit us 4012 MYRTLE ST, BURNABY"
-            />
-          )}
+
+          <Image
+            src={"RichmondBranch.svg"}
+            height={437}
+            loading="lazy"
+            width={300}
+            className={`${
+              Branch.value === "Richmond Branch" ? "" : "invisible hidden"
+            }`}
+            alt="Visit us 1952 KINGSWAY AVE UNIT 420, RICHMOND"
+          />
+
+          <Image
+            src={"PortBranch.svg"}
+            height={437}
+            loading="lazy"
+            width={300}
+            className={`${
+              Branch.value === "Port Coquitlam Branch" ? "" : "invisible hidden"
+            }`}
+            alt="Visit us 12331 BRIDGEPORT ROAD UNIT 3~4, PORT COQUITLAM"
+          />
+
+          <Image
+            src={"BurnabyBranch.svg"}
+            loading="lazy"
+            height={437}
+            width={300}
+            className={`${
+              Branch.value === "Burnaby Branch" ? "" : " invisible hidden"
+            }`}
+            alt="Visit us 4012 MYRTLE ST, BURNABY"
+          />
         </div>
       </div>
     </section>

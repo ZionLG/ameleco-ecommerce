@@ -6,6 +6,7 @@ import {
   PopoverTrigger,
   Spinner,
 } from "@nextui-org/react";
+import { useUser } from "@supabase/auth-helpers-react";
 import { ShoppingCart } from "lucide-react";
 
 import { api } from "~/utils/api";
@@ -13,8 +14,10 @@ import { cn } from "~/utils/utils";
 import { buttonVariants } from "./ui/button";
 
 const HeaderCart = () => {
+  const user = useUser();
+
   const [isOpen, setIsOpen] = React.useState(false);
-  const cart = api.shop.getCart.useQuery();
+  const cart = api.shop.getCart.useQuery(undefined, { enabled: !!user });
   const utils = api.useContext();
 
   const { mutate: createCart } = api.shop.createCart.useMutation({
@@ -30,6 +33,7 @@ const HeaderCart = () => {
   }, [cart.data, createCart]);
   return (
     <Popover
+      shouldBlockScroll
       placement="bottom"
       showArrow={true}
       isOpen={isOpen}
