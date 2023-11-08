@@ -4,6 +4,7 @@ import type {
   GetStaticPropsContext,
   InferGetStaticPropsType,
 } from "next";
+import Head from "next/head";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import {
@@ -42,17 +43,19 @@ const ProductPage = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
       void utils.shop.getCart.invalidate();
     },
   });
-  console.log("Isfallback", router.isFallback);
-  console.log("status", product.status);
-
-  // if (router.isFallback || product.status !== "success") {
-  //   return <div>Loading...</div>;
-  // }
 
   if (product.data) {
     const productData = product.data;
     return (
       <main className="flex flex-col justify-center gap-10 bg-secondary px-10 py-5 ">
+        <Head>
+          <title>{name}</title>
+          <meta
+            name="description"
+            content={productData.description ?? ""}
+            key="desc"
+          />
+        </Head>
         <Breadcrumbs>
           <BreadcrumbItem href="/">Home</BreadcrumbItem>
           <BreadcrumbItem href="/shop">Shop</BreadcrumbItem>
@@ -170,12 +173,14 @@ const ProductPage = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
       </main>
     );
   }
+  console.log("link", router.query.slug);
+
   return (
     <main className="flex flex-col justify-center gap-10 bg-secondary px-10 py-5 ">
       <Breadcrumbs>
         <BreadcrumbItem href="/">Home</BreadcrumbItem>
         <BreadcrumbItem href="/shop">Shop</BreadcrumbItem>
-        <BreadcrumbItem>{name}</BreadcrumbItem>
+        <BreadcrumbItem> </BreadcrumbItem>
       </Breadcrumbs>
       <div className="invisible hidden justify-center gap-10 md:visible md:flex">
         <div className="grid max-w-2xl grid-rows-2 gap-10">
@@ -214,10 +219,10 @@ export async function getStaticProps(
   const helpers = createServerSideHelpers({
     router: appRouter,
     ctx: { prisma: prisma, user: null, supabase: null },
-    transformer: superjson, // optional - adds superjson serialization
+    transformer: superjson,
   });
   const name = context.params?.slug!;
-  // prefetch `post.byId`
+
   await helpers.shop.productByName.prefetch({ productName: name });
   return {
     props: {
