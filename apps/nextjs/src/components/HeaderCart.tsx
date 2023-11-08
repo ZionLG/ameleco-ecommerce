@@ -30,6 +30,7 @@ const HeaderCart = () => {
   }, [cart.data, createCart]);
   return (
     <Popover
+      shouldBlockScroll
       placement="bottom"
       showArrow={true}
       isOpen={isOpen}
