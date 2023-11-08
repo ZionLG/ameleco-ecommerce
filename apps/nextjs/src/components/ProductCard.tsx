@@ -1,7 +1,8 @@
 import React from "react";
 import NextImage from "next/image";
 import Link from "next/link";
-import { Card, CardBody, CardFooter, Image } from "@nextui-org/react";
+import { Card, CardBody, CardFooter, Image, Spinner } from "@nextui-org/react";
+import { useUser } from "@supabase/auth-helpers-react";
 import { Dot } from "lucide-react";
 
 import type { RouterOutputs } from "~/utils/api";
@@ -11,6 +12,8 @@ interface ProductCardProps {
 }
 
 const ProductCard = ({ product }: ProductCardProps) => {
+  const user = useUser();
+
   return (
     <Link href={`/shop/${encodeURIComponent(product.name)}`}>
       <Card shadow="sm" isPressable onPress={() => console.log("item pressed")}>
@@ -31,7 +34,10 @@ const ProductCard = ({ product }: ProductCardProps) => {
           <div className=" flex">
             <span className="text-xl text-default-500 ">
               {Object.keys(product.price).map(function (key) {
-                return "$" + product.price[key as keyof typeof product.price];
+                if (key.toUpperCase() === user?.app_metadata.AMELECO_group)
+                  return "$" + product.price[key as keyof typeof product.price];
+
+                return <Spinner key={key} size="sm" />;
               })}
             </span>
             <div
