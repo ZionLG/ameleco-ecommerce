@@ -6,7 +6,13 @@ import type {
 } from "next";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { BreadcrumbItem, Breadcrumbs, Spinner } from "@nextui-org/react";
+import {
+  BreadcrumbItem,
+  Breadcrumbs,
+  Skeleton,
+  Spinner,
+} from "@nextui-org/react";
+import { useUser } from "@supabase/auth-helpers-react";
 import { createServerSideHelpers } from "@trpc/react-query/server";
 import { Dot, Minus, Plus } from "lucide-react";
 import superjson from "superjson";
@@ -21,11 +27,14 @@ import { Separator } from "~/components/ui/separator";
 
 const ProductPage = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
   const { name } = props;
-
+  const user = useUser();
   const router = useRouter();
-  const product = api.shop.productByName.useQuery({
-    productName: name,
-  });
+  const product = api.shop.productByName.useQuery(
+    {
+      productName: name,
+    },
+    { enabled: !!name },
+  );
   const [quantity, setQuantity] = useState(1);
   const utils = api.useContext();
   const { mutate, isLoading } = api.shop.addToCart.useMutation({
@@ -33,19 +42,21 @@ const ProductPage = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
       void utils.shop.getCart.invalidate();
     },
   });
-  if (router.isFallback || product.status !== "success") {
-    return <div>Loading...</div>;
-  }
+  console.log("Isfallback", router.isFallback);
+  console.log("status", product.status);
+
+  // if (router.isFallback || product.status !== "success") {
+  //   return <div>Loading...</div>;
+  // }
+
   if (product.data) {
     const productData = product.data;
     return (
       <main className="flex flex-col justify-center gap-10 bg-secondary px-10 py-5 ">
         <Breadcrumbs>
-          <BreadcrumbItem>Home</BreadcrumbItem>
-          <BreadcrumbItem>Music</BreadcrumbItem>
-          <BreadcrumbItem>Artist</BreadcrumbItem>
-          <BreadcrumbItem>Album</BreadcrumbItem>
-          <BreadcrumbItem>Song</BreadcrumbItem>
+          <BreadcrumbItem href="/">Home</BreadcrumbItem>
+          <BreadcrumbItem href="/shop">Shop</BreadcrumbItem>
+          <BreadcrumbItem>{name}</BreadcrumbItem>
         </Breadcrumbs>
         <div className="invisible hidden justify-center gap-10 md:visible md:flex">
           <div className="grid max-w-2xl grid-rows-2 gap-10">
@@ -68,15 +79,17 @@ const ProductPage = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
             <span className="text-2xl font-bold">{productData.name}</span>
             <span className="text-sm">{productData.category}</span>
             <Separator className="my-2" />
-            <span className="min-w-fit">
+            <span className="flex min-w-fit items-center gap-2">
               Price:
-              <span className="text-xl font-semibold">
-                {" "}
+              <span className="text-xl font-semibold ">
                 {Object.keys(productData.price).map(function (key) {
-                  return (
-                    "$" +
-                    productData.price[key as keyof typeof productData.price]
-                  );
+                  if (key.toUpperCase() === user?.app_metadata.AMELECO_group)
+                    return (
+                      "$" +
+                      productData.price[key as keyof typeof productData.price]
+                    );
+
+                  return <Spinner key={key} size="sm" />;
                 })}
               </span>
             </span>
@@ -157,10 +170,40 @@ const ProductPage = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
       </main>
     );
   }
-
   return (
-    <main className="flex flex-col items-center justify-center gap-10 px-10 py-5 ">
-      <Spinner />
+    <main className="flex flex-col justify-center gap-10 bg-secondary px-10 py-5 ">
+      <Breadcrumbs>
+        <BreadcrumbItem href="/">Home</BreadcrumbItem>
+        <BreadcrumbItem href="/shop">Shop</BreadcrumbItem>
+        <BreadcrumbItem>{name}</BreadcrumbItem>
+      </Breadcrumbs>
+      <div className="invisible hidden justify-center gap-10 md:visible md:flex">
+        <div className="grid max-w-2xl grid-rows-2 gap-10">
+          <Skeleton className=" rounded-sm shadow-md">
+            <div className="h-[30rem] w-[30rem] rounded-sm bg-default-300"></div>
+          </Skeleton>
+
+          <div className="flex flex-col gap-5 rounded-sm bg-background p-10 shadow-md">
+            <Skeleton className=" h-8 w-36 rounded-sm " />
+            <Skeleton className=" h-10 w-80 rounded-sm " />
+            <Skeleton className=" h-6 w-full rounded-sm " />
+            <Skeleton className=" h-6 w-full rounded-sm " />
+            <Skeleton className=" h-6 w-full rounded-sm " />
+          </div>
+        </div>
+        <div className="top-60 flex h-fit flex-col  gap-10  rounded-sm bg-background px-10 py-5 shadow-md md:sticky lg:top-52 3xl:top-64">
+          <Skeleton className=" h-10 w-96 rounded-sm " />
+          <Skeleton className=" h-6 w-32 rounded-sm " />
+          <Separator className="my-2" />
+          <span className="flex min-w-fit items-center gap-2">
+            <Skeleton className=" h-6 w-16 rounded-sm " />
+            <Skeleton className=" h-10 w-12 rounded-sm " />
+          </span>
+          <Skeleton className=" h-7 w-48 rounded-sm " />
+
+          <Skeleton className=" h-10 w-full rounded-sm " />
+        </div>
+      </div>
     </main>
   );
 };

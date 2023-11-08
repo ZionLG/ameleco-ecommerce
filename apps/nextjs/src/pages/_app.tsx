@@ -7,6 +7,7 @@ import "../styles/globals.css";
 import { useState } from "react";
 import type { AppProps } from "next/app";
 import { Encode_Sans_Expanded } from "next/font/google";
+import { useRouter } from "next/router";
 import { NextUIProvider } from "@nextui-org/react";
 import { SessionContextProvider } from "@supabase/auth-helpers-react";
 
@@ -29,6 +30,7 @@ function MyApp({
       supabaseUrl: env.NEXT_PUBLIC_SUPABASE_URL,
     }),
   );
+  const router = useRouter();
 
   return (
     <SessionContextProvider
@@ -36,7 +38,7 @@ function MyApp({
       initialSession={pageProps.initialSession}
     >
       <ThemeProvider attribute="class" defaultTheme="white" enableSystem>
-        <NextUIProvider>
+        <NextUIProvider navigate={router.push}>
           <Layout>
             {/* eslint-disable-next-line react/no-unknown-property*/}
             <style jsx global>{`
