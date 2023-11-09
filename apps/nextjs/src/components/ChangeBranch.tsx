@@ -23,12 +23,10 @@ const ChangeBranch = () => {
         <DropdownMenuRadioGroup
           value={Branch.value}
           onValueChange={(valueBranch) => {
-            console.log(valueBranch);
             Branch.value = valueBranch as
               | "Richmond Branch"
               | "Burnaby Branch"
               | "Port Coquitlam Branch";
-            console.log(Branch.value);
           }}
         >
           <DropdownMenuRadioItem value={"Richmond Branch"}>

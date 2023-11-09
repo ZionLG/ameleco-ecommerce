@@ -10,13 +10,98 @@ export const shopRouter = createTRPCRouter({
       data: { userId: ctx.user.id },
     });
   }),
-  getCart: protectedProcedure.query(async ({ ctx }) => {
-    const cart = await ctx.prisma.cart.findUnique({
-      where: { userId: ctx.user.id },
-      include: { items: true },
-    });
+  getProduct: protectedProcedure
+    .input(z.object({ productId: z.string() }))
+    .query(async ({ input, ctx }) => {
+      let group;
 
-    return cart;
+      if (ctx.user && ctx.supabase) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        const { data, error } = await ctx.supabase.rpc("get_my_claim", {
+          claim: "AMELECO_group",
+        });
+        if (error) {
+          return;
+        }
+
+        group = data as Groups;
+      } else {
+        group = "VISITOR" as Groups;
+      }
+      const cartItem = await ctx.prisma.product.findUnique({
+        where: { id: input.productId },
+        include: {
+          price: {
+            select: {
+              contractor: group === "CONTRACTOR",
+              customer: group === "CUSTOMER",
+              frequent: group === "FREQUENT",
+              professional: group === "PROFESSIONAL",
+              vip: group === "VIP",
+              visitor: group === "VISITOR",
+            },
+          },
+        },
+      });
+
+      return cartItem;
+    }),
+  getCartItem: protectedProcedure
+    .input(z.object({ itemId: z.string() }))
+    .query(async ({ input, ctx }) => {
+      const cartItem = await ctx.prisma.cartItem.findUnique({
+        where: { id: input.itemId },
+        include: { product: true },
+      });
+
+      return cartItem;
+    }),
+  getCart: protectedProcedure.query(async ({ ctx }) => {
+    let group;
+
+    if (ctx.user && ctx.supabase) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const { data, error } = await ctx.supabase.rpc("get_my_claim", {
+        claim: "AMELECO_group",
+      });
+      if (error) {
+        return;
+      }
+
+      group = data as Groups;
+    } else {
+      group = "VISITOR" as Groups;
+    }
+    return await ctx.prisma.cart.findUnique({
+      where: { userId: ctx.user.id },
+      select: {
+        id: true,
+        items: {
+          orderBy: {
+            createdAt: "asc",
+          },
+          select: {
+            quantity: true,
+            id: true,
+
+            product: {
+              include: {
+                price: {
+                  select: {
+                    contractor: group === "CONTRACTOR",
+                    customer: group === "CUSTOMER",
+                    frequent: group === "FREQUENT",
+                    professional: group === "PROFESSIONAL",
+                    vip: group === "VIP",
+                    visitor: group === "VISITOR",
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
   }),
   addToCart: protectedProcedure
     .input(
@@ -88,6 +173,58 @@ export const shopRouter = createTRPCRouter({
           },
         });
       }
+    }),
+  changeItemQuantity: protectedProcedure
+    .input(z.object({ itemId: z.string(), productQuantity: z.number().min(1) }))
+    .mutation(async ({ input: { itemId, productQuantity }, ctx }) => {
+      const item = await ctx.prisma.cartItem.findUnique({
+        where: { id: itemId },
+        select: {
+          product: {
+            select: {
+              stock: true,
+            },
+          },
+        },
+      });
+
+      if (item == null) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Product not found.",
+        });
+      }
+
+      if (productQuantity > item.product.stock) {
+        throw new TRPCError({
+          code: "UNPROCESSABLE_CONTENT",
+          message: "Insufficient stock. Please refresh for updates.",
+        });
+      }
+
+      const updatedItem = await ctx.prisma.cartItem.update({
+        where: { id: itemId },
+
+        data: { quantity: productQuantity },
+      });
+
+      return updatedItem;
+    }),
+  removeFromCart: protectedProcedure
+    .input(z.object({ itemId: z.string() }))
+    .mutation(async ({ input: { itemId }, ctx }) => {
+      const item = await ctx.prisma.cartItem.delete({
+        where: { id: itemId },
+      });
+
+      if (item == null) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Product not found.",
+        });
+      }
+
+      return item;
     }),
   productById: publicProcedure
     .input(z.object({ productId: z.string() }))

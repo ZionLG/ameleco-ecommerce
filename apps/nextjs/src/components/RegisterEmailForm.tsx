@@ -64,7 +64,6 @@ const RegisterEmailForm = () => {
   const { mutate: createCart } = api.shop.createCart.useMutation();
   const toggleVisibility = () => setIsVisible(!isVisible);
   const onSubmit: SubmitHandler<signUpEmail> = async (data) => {
-    console.log(data);
     const toastId = toast("Sonner");
     toast.loading("Loading...", {
       id: toastId,

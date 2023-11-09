@@ -22,8 +22,8 @@ import { appRouter } from "@ameleco/api";
 import { prisma } from "@ameleco/db";
 
 import { api } from "~/utils/api";
+import Quantity from "~/components/Quantity";
 import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/input";
 import { Separator } from "~/components/ui/separator";
 
 const ProductPage = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
@@ -87,8 +87,8 @@ const ProductPage = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
               <span className="text-xl font-semibold ">
                 {Object.keys(productData.price).map(function (key) {
                   if (
-                    key.toUpperCase() === user?.app_metadata.AMELECO_group ||
-                    user == null
+                    key.toUpperCase() === user?.app_metadata.AMELECO_group &&
+                    user != null
                   )
                     return (
                       "$" +
@@ -116,49 +116,14 @@ const ProductPage = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
             </div>
             <div className="flex items-center gap-5">
               <span>Quantity: </span>
-              <div className="flex">
-                <Button
-                  variant={"outline"}
-                  size={"icon"}
-                  className="rounded-none border border-r-0 p-2"
-                  onClick={() =>
-                    setQuantity((old) => {
-                      if (old > 1) return old - 1;
-                      return old;
-                    })
-                  }
-                >
-                  <Minus />
-                </Button>
-                <Input
-                  type="number"
-                  className="w-14 rounded-none p-2 text-center text-lg focus-visible:ring-transparent"
-                  value={quantity}
-                  onChange={(e) => {
-                    if (Number.isNaN(e.target.valueAsNumber)) {
-                      setQuantity(1);
-                      return;
-                    } else if (e.target.valueAsNumber > productData.stock) {
-                      setQuantity(productData.stock);
-                      return;
-                    }
-                    setQuantity(e.target.valueAsNumber);
-                  }}
-                />
-                <Button
-                  variant={"outline"}
-                  className="rounded-none border-l-0  p-2"
-                  size={"icon"}
-                  onClick={() =>
-                    setQuantity((old) => {
-                      if (old < productData.stock) return old + 1;
-                      return old;
-                    })
-                  }
-                >
-                  <Plus />
-                </Button>
-              </div>
+              <Quantity
+                stock={productData.stock}
+                setQuantity={setQuantity}
+                quantity={quantity}
+                updateData={false}
+                startQuantity={undefined}
+                itemId={undefined}
+              />
             </div>
             <Button
               disabled={isLoading || productData.stock === 0}
@@ -176,7 +141,6 @@ const ProductPage = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
       </main>
     );
   }
-  console.log("link", router.query.slug);
 
   return (
     <main className="flex flex-col justify-center gap-10 bg-secondary px-10 py-5 ">
