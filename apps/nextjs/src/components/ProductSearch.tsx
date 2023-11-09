@@ -43,7 +43,6 @@ const ProductSearch = ({ maxResults = 5 }: SearchProps) => {
   const router = useRouter();
 
   useEffect(() => {
-    console.log(searchTerm);
     if (searchTerm.length > 0 && data) {
       const tempArray = [] as NonNullable<RouterOutputs["shop"]["allProducts"]>;
       for (let i = 0; i < data.length && tempArray.length <= maxResults; i++) {
@@ -57,10 +56,6 @@ const ProductSearch = ({ maxResults = 5 }: SearchProps) => {
       setFiltered([]);
     }
   }, [data, maxResults, searchTerm]);
-
-  useEffect(() => {
-    console.log(filtered);
-  }, [filtered]);
 
   const handleOnSelect = async (itemId: string) => {
     setSearchTerm("");
