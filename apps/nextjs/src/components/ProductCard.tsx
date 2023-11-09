@@ -16,7 +16,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
 
   return (
     <Link href={`/shop/${encodeURIComponent(product.name)}`}>
-      <Card shadow="sm" isPressable onPress={() => console.log("item pressed")}>
+      <Card shadow="sm" isPressable>
         <CardBody className="items-center  overflow-visible p-2">
           <Image
             as={NextImage}
