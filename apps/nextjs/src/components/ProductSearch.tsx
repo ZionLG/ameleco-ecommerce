@@ -57,9 +57,10 @@ const ProductSearch = ({ maxResults = 5 }: SearchProps) => {
     }
   }, [data, maxResults, searchTerm]);
 
-  const handleOnSelect = async (itemId: string) => {
+  const handleOnSelect = (itemName: string) => {
+    console.log("seleced");
     setSearchTerm("");
-    await router.push(`/shop/${itemId}`);
+    void router.push(`/shop/${encodeURIComponent(itemName)}`);
   };
   const formatResult = (
     product: NonNullable<RouterOutputs["shop"]["productById"]>,
@@ -67,19 +68,23 @@ const ProductSearch = ({ maxResults = 5 }: SearchProps) => {
     return (
       <div
         key={product.id}
-        onClick={() => handleOnSelect(product.id)}
-        className="group/item flex cursor-pointer items-center gap-10 bg-background  p-4"
+        className="group/item  grow  cursor-pointer bg-background "
       >
-        <Image
-          alt={product.name}
-          src={product.avatarUrl}
-          width={50}
-          height={50}
-          className="rounded-md"
-        />
-        <div className="flex  grow items-center justify-center self-stretch rounded-md p-2 group-hover/item:bg-secondary">
-          <span className="text-center text-primary">{product.name}</span>
-        </div>
+        <button
+          className="flex w-full items-center gap-10 p-4"
+          onClick={() => handleOnSelect(product.name)}
+        >
+          <Image
+            alt={product.name}
+            src={product.avatarUrl}
+            width={50}
+            height={50}
+            className="rounded-md"
+          />
+          <div className="flex  grow items-center justify-center self-stretch rounded-md p-2 group-hover/item:bg-secondary">
+            <span className="text-center text-primary">{product.name}</span>
+          </div>
+        </button>
       </div>
     );
   };
