@@ -6,7 +6,7 @@ import {
   PopoverTrigger,
   Spinner,
 } from "@nextui-org/react";
-import { useUser } from "@supabase/auth-helpers-react";
+import { useSessionContext } from "@supabase/auth-helpers-react";
 import { ShoppingCart } from "lucide-react";
 
 import { api } from "~/utils/api";
@@ -17,28 +17,24 @@ import { ScrollArea } from "./ui/scroll-area";
 import { Separator } from "./ui/separator";
 
 const HeaderCart = () => {
-  const user = useUser();
+  const session = useSessionContext();
+
   const [total, setTotal] = React.useState(0);
 
   const [isOpen, setIsOpen] = React.useState(false);
   const { data, isLoading, isSuccess } = api.shop.getCart.useQuery(undefined, {
-    enabled: !!user,
+    enabled: !!session.session,
   });
-  const utils = api.useContext();
 
-  const { mutate: createCart } = api.shop.createCart.useMutation({
-    onSuccess: () => {
-      void utils.shop.getCart.invalidate();
-    },
-  });
   useEffect(() => {
     if (data) {
       let localTotal = 0;
       data.items.forEach((item) => {
         const price = Object.keys(item.product.price).map(function (key) {
           if (
-            key.toUpperCase() === user?.app_metadata.AMELECO_group ||
-            user == null
+            key.toUpperCase() ===
+              session.session?.user.app_metadata.AMELECO_group ||
+            session.isLoading == false
           )
             return item.product.price[key as keyof typeof item.product.price];
         })[0];
@@ -50,7 +46,11 @@ const HeaderCart = () => {
 
       setTotal(localTotal);
     }
-  }, [data, user]);
+  }, [
+    data,
+    session.isLoading,
+    session.session?.user.app_metadata.AMELECO_group,
+  ]);
   return (
     <Popover
       shouldBlockScroll
@@ -102,16 +102,24 @@ const HeaderCart = () => {
                 <span>${total}</span>
               </div>
               <div className="flex gap-5">
-                <Button size={"lg"} className="grow rounded-sm py-7">
+                <Link
+                  href={"/cart"}
+                  className={`${cn(
+                    buttonVariants({ variant: "default", size: "lg" }),
+                  )} grow rounded-sm py-7`}
+                  onClick={() => setIsOpen(false)}
+                >
                   View Cart
-                </Button>
-                <Button
-                  size={"lg"}
-                  className="grow rounded-sm py-7"
-                  variant={"destructive"}
+                </Link>
+                <Link
+                  href={"/cart"}
+                  className={`${cn(
+                    buttonVariants({ variant: "destructive", size: "lg" }),
+                  )} grow rounded-sm py-7`}
+                  onClick={() => setIsOpen(false)}
                 >
                   Checkout
-                </Button>
+                </Link>
               </div>
             </div>
           )}

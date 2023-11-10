@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { Spinner } from "@nextui-org/react";
-import { useUser } from "@supabase/auth-helpers-react";
+import { useSessionContext } from "@supabase/auth-helpers-react";
 
 import { api } from "~/utils/api";
 import type { RouterOutputs } from "~/utils/api";
@@ -19,7 +19,8 @@ const CartProduct = ({
   startingQuantity,
   cartItemId,
 }: CartProductProps) => {
-  const user = useUser();
+  const session = useSessionContext();
+
   const [quantity, setQuantity] = useState(startingQuantity);
   const utils = api.useContext();
   const { mutate: removeItem } = api.shop.removeFromCart.useMutation({
@@ -44,8 +45,9 @@ const CartProduct = ({
         <span className="text-xl font-semibold text-default-500 ">
           {Object.keys(product.price).map(function (key) {
             if (
-              key.toUpperCase() === user?.app_metadata.AMELECO_group ||
-              user == null
+              key.toUpperCase() ===
+                session.session?.user.app_metadata.AMELECO_group ||
+              session.isLoading == false
             )
               return (
                 "$" +
