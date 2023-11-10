@@ -22,7 +22,7 @@ const MENU_LIST = [
   { text: "Shop", href: "/shop" },
   { text: "Projects", href: "/projects" },
   { text: "Career", href: "/career" },
-  { text: "Contact Us", href: "/contact" },
+  { text: "Contact Us", href: "/contact-us" },
 ];
 
 const Header = () => {

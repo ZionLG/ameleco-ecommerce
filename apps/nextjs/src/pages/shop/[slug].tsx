@@ -6,16 +6,16 @@ import type {
 } from "next";
 import Head from "next/head";
 import Image from "next/image";
-import { useRouter } from "next/router";
 import {
   BreadcrumbItem,
   Breadcrumbs,
   Skeleton,
   Spinner,
 } from "@nextui-org/react";
-import { useUser } from "@supabase/auth-helpers-react";
+import { useSessionContext } from "@supabase/auth-helpers-react";
 import { createServerSideHelpers } from "@trpc/react-query/server";
-import { Dot, Minus, Plus } from "lucide-react";
+import { Dot } from "lucide-react";
+import { toast } from "sonner";
 import superjson from "superjson";
 
 import { appRouter } from "@ameleco/api";
@@ -28,8 +28,8 @@ import { Separator } from "~/components/ui/separator";
 
 const ProductPage = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
   const { name } = props;
-  const user = useUser();
-  const router = useRouter();
+  const session = useSessionContext();
+
   const product = api.shop.productByName.useQuery(
     {
       productName: name,
@@ -41,6 +41,10 @@ const ProductPage = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
   const { mutate, isLoading } = api.shop.addToCart.useMutation({
     onSuccess: () => {
       void utils.shop.getCart.invalidate();
+      toast.success("Item added successfully.");
+    },
+    onError: (error) => {
+      toast.error(error.message);
     },
   });
 
@@ -87,8 +91,9 @@ const ProductPage = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
               <span className="text-xl font-semibold ">
                 {Object.keys(productData.price).map(function (key) {
                   if (
-                    key.toUpperCase() === user?.app_metadata.AMELECO_group &&
-                    user != null
+                    key.toUpperCase() ===
+                      session.session?.user.app_metadata.AMELECO_group ||
+                    session.isLoading == false
                   )
                     return (
                       "$" +
@@ -126,7 +131,9 @@ const ProductPage = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
               />
             </div>
             <Button
-              disabled={isLoading || productData.stock === 0}
+              disabled={
+                isLoading || productData.stock === 0 || session.session == null
+              }
               onClick={() =>
                 mutate({ productId: productData.id, productQuantity: quantity })
               }

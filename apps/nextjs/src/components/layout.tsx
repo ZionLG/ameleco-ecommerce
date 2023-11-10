@@ -11,7 +11,7 @@ export default function Layout({ children }: LayoutProps) {
     <>
       <Header />
       <>{children}</>
-      <Toaster />
+      <Toaster richColors />
       <Footer />
     </>
   );

@@ -2,7 +2,7 @@ import React from "react";
 import NextImage from "next/image";
 import Link from "next/link";
 import { Card, CardBody, CardFooter, Image, Spinner } from "@nextui-org/react";
-import { useUser } from "@supabase/auth-helpers-react";
+import { useSessionContext } from "@supabase/auth-helpers-react";
 import { Dot } from "lucide-react";
 
 import type { RouterOutputs } from "~/utils/api";
@@ -12,7 +12,7 @@ interface ProductCardProps {
 }
 
 const ProductCard = ({ product }: ProductCardProps) => {
-  const user = useUser();
+  const session = useSessionContext();
 
   return (
     <Link href={`/shop/${encodeURIComponent(product.name)}`}>
@@ -35,8 +35,9 @@ const ProductCard = ({ product }: ProductCardProps) => {
             <span className="text-xl text-default-500 ">
               {Object.keys(product.price).map(function (key) {
                 if (
-                  key.toUpperCase() === user?.app_metadata.AMELECO_group ||
-                  user == null
+                  key.toUpperCase() ===
+                    session.session?.user.app_metadata.AMELECO_group ||
+                  session.isLoading == false
                 )
                   return "$" + product.price[key as keyof typeof product.price];
 
