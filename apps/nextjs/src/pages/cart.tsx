@@ -22,7 +22,6 @@ import {
 
 const CartPage = () => {
   const session = useSessionContext();
-
   const router = useRouter();
   const { data, isLoading, isSuccess } = api.shop.getCart.useQuery(undefined, {
     enabled: !!session,
