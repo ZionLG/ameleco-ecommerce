@@ -5,6 +5,7 @@ import { useSessionContext } from "@supabase/auth-helpers-react";
 
 import type { RouterOutputs } from "~/utils/api";
 import { api } from "~/utils/api";
+import { ShouldShowPrice } from "~/utils/utils";
 import Quantity from "./Quantity";
 import { Button } from "./ui/button";
 import { TableCell, TableRow } from "./ui/table";
@@ -41,11 +42,7 @@ const CartTableRow = ({
           <span className="font-semibold">{product.name}</span>
           <span className="font-semibold">
             {Object.keys(product.price).map(function (key) {
-              if (
-                key.toUpperCase() ===
-                  session.session?.user.app_metadata.AMELECO_group ||
-                session.isLoading == false
-              )
+              if (ShouldShowPrice(key, session))
                 return "$" + product.price[key as keyof typeof product.price];
 
               return <Spinner key={key} size="sm" />;
@@ -73,11 +70,7 @@ const CartTableRow = ({
       </TableCell>
       <TableCell className="text-right">
         {Object.keys(product.price).map(function (key) {
-          if (
-            key.toUpperCase() ===
-              session.session?.user.app_metadata.AMELECO_group ||
-            session.isLoading == false
-          )
+          if (ShouldShowPrice(key, session))
             return (
               "$" + product.price[key as keyof typeof product.price] * quantity
             );

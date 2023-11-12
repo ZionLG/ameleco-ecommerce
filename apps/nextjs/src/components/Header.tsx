@@ -34,7 +34,14 @@ const Header = () => {
         <span className=" text-5xl  font-bold uppercase italic text-[#0070C0]  lg:text-8xl">
           AMELECO
         </span>
-        <Sidebar MENU_LIST={MENU_LIST} />
+        <div className="flex items-center justify-end gap-10 md:hidden">
+          <div className="flex gap-2">
+            <DynamicHeaderAuth />
+            {user && <DynamicHeaderCart />}
+          </div>
+          <Sidebar MENU_LIST={MENU_LIST} />
+        </div>
+
         <div className="invisible hidden grow lg:visible lg:inline-block">
           <ProductSearch />
         </div>

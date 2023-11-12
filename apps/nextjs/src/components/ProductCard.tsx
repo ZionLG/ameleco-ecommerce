@@ -6,6 +6,7 @@ import { useSessionContext } from "@supabase/auth-helpers-react";
 import { Dot } from "lucide-react";
 
 import type { RouterOutputs } from "~/utils/api";
+import { ShouldShowPrice } from "~/utils/utils";
 
 interface ProductCardProps {
   product: NonNullable<RouterOutputs["shop"]["productById"]>;
@@ -34,11 +35,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
           <div className=" flex">
             <span className="text-xl text-default-500 ">
               {Object.keys(product.price).map(function (key) {
-                if (
-                  key.toUpperCase() ===
-                    session.session?.user.app_metadata.AMELECO_group ||
-                  session.isLoading == false
-                )
+                if (ShouldShowPrice(key, session))
                   return "$" + product.price[key as keyof typeof product.price];
 
                 return <Spinner key={key} size="sm" />;
