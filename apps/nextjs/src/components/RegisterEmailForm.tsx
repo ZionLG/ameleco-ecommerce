@@ -61,8 +61,9 @@ const RegisterEmailForm = () => {
   });
   const supabase = useSupabaseClient();
   const [isVisible, setIsVisible] = useState(false);
-  const { mutate: createCart } = api.shop.createCart.useMutation();
   const toggleVisibility = () => setIsVisible(!isVisible);
+
+  const { mutate: createCart } = api.shop.createCart.useMutation();
   const onSubmit: SubmitHandler<signUpEmail> = async (data) => {
     const toastId = toast("Sonner");
     toast.loading("Loading...", {
