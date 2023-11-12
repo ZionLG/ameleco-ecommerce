@@ -29,7 +29,7 @@ const Shop = () => {
         <BreadcrumbItem href="/">Home</BreadcrumbItem>
         <BreadcrumbItem href="/shop">Shop</BreadcrumbItem>
       </Breadcrumbs>
-      <div className=" grid-cols-cards-1 md:grid-cols-cards-2 xl:grid-cols-cards-3 2xl:grid-cols-cards-4 mt-10 grid justify-center  gap-x-32 gap-y-10">
+      <div className=" mt-10 grid grid-cols-1 justify-center gap-x-32 gap-y-10 md:grid-cols-2  xl:grid-cols-3 2xl:grid-cols-4">
         {products.data?.map((product) => (
           <ProductCard product={product} key={product.id} />
         ))}
