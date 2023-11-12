@@ -27,7 +27,9 @@ const HeaderAuth = () => {
             {user.user_metadata.first_name} {user.user_metadata.last_name}
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>Profile</DropdownMenuItem>
+          <DropdownMenuItem>
+            <Link href={"/account"}>Profile</Link>
+          </DropdownMenuItem>
           {user.app_metadata.AMELECO_is_staff ? (
             <DropdownMenuItem>Products Dashboard</DropdownMenuItem>
           ) : null}
