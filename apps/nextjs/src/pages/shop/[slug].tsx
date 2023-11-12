@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import type {
   GetStaticPaths,
   GetStaticPropsContext,
@@ -22,6 +22,7 @@ import { appRouter } from "@ameleco/api";
 import { prisma } from "@ameleco/db";
 
 import { api } from "~/utils/api";
+import { ShouldShowPrice } from "~/utils/utils";
 import Quantity from "~/components/Quantity";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
@@ -90,11 +91,7 @@ const ProductPage = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
               Price:
               <span className="text-xl font-semibold ">
                 {Object.keys(productData.price).map(function (key) {
-                  if (
-                    key.toUpperCase() ===
-                      session.session?.user.app_metadata.AMELECO_group ||
-                    session.isLoading == false
-                  )
+                  if (ShouldShowPrice(key, session))
                     return (
                       "$" +
                       productData.price[key as keyof typeof productData.price]

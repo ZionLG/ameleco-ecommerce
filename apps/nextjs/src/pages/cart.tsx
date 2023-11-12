@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { useSessionContext } from "@supabase/auth-helpers-react";
 
 import { api } from "~/utils/api";
+import { ShouldShowPrice } from "~/utils/utils";
 import CartTableRow from "~/components/CartTableRow";
 import { Button } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
@@ -32,11 +33,7 @@ const CartPage = () => {
       let localTotal = 0;
       data.items.forEach((item) => {
         const price = Object.keys(item.product.price).map(function (key) {
-          if (
-            key.toUpperCase() ===
-              session.session?.user?.app_metadata.AMELECO_group ||
-            session.isLoading == false
-          )
+          if (ShouldShowPrice(key, session))
             return item.product.price[key as keyof typeof item.product.price];
         })[0];
 

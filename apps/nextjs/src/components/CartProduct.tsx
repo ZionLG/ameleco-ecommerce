@@ -5,6 +5,7 @@ import { useSessionContext } from "@supabase/auth-helpers-react";
 
 import { api } from "~/utils/api";
 import type { RouterOutputs } from "~/utils/api";
+import { ShouldShowPrice } from "~/utils/utils";
 import Quantity from "./Quantity";
 import { Button } from "./ui/button";
 
@@ -44,11 +45,7 @@ const CartProduct = ({
         </span>
         <span className="text-xl font-semibold text-default-500 ">
           {Object.keys(product.price).map(function (key) {
-            if (
-              key.toUpperCase() ===
-                session.session?.user.app_metadata.AMELECO_group ||
-              session.isLoading == false
-            )
+            if (ShouldShowPrice(key, session))
               return (
                 "$" +
                 product.price[key as keyof typeof product.price] * quantity

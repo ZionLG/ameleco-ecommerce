@@ -10,7 +10,7 @@ import { useSessionContext } from "@supabase/auth-helpers-react";
 import { ShoppingCart } from "lucide-react";
 
 import { api } from "~/utils/api";
-import { cn } from "~/utils/utils";
+import { cn, ShouldShowPrice } from "~/utils/utils";
 import CartProduct from "./CartProduct";
 import { Button, buttonVariants } from "./ui/button";
 import { ScrollArea } from "./ui/scroll-area";
@@ -31,11 +31,7 @@ const HeaderCart = () => {
       let localTotal = 0;
       data.items.forEach((item) => {
         const price = Object.keys(item.product.price).map(function (key) {
-          if (
-            key.toUpperCase() ===
-              session.session?.user.app_metadata.AMELECO_group ||
-            session.isLoading == false
-          )
+          if (ShouldShowPrice(key, session))
             return item.product.price[key as keyof typeof item.product.price];
         })[0];
 
@@ -48,6 +44,7 @@ const HeaderCart = () => {
     }
   }, [
     data,
+    session,
     session.isLoading,
     session.session?.user.app_metadata.AMELECO_group,
   ]);
