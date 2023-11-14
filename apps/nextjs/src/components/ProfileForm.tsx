@@ -11,6 +11,7 @@ import type {
   Occupation,
   PurchaseFrequency,
 } from "@prisma/client";
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { Briefcase, Home, Info, PhoneCall, User } from "lucide-react";
 import type { SubmitHandler } from "react-hook-form";
 import { Controller, useForm } from "react-hook-form";
@@ -38,15 +39,34 @@ const ProfileForm = (profile: ProfileEdit) => {
     defaultValues: { ...profile },
     mode: "onTouched",
   });
-
+  const supabase = useSupabaseClient();
+  const utils = api.useContext();
+  const { mutate, isLoading } = api.auth.updateProfile.useMutation({
+    onSuccess: () => {
+      void utils.auth.me.invalidate();
+      toast.success("Profile updated successfully.");
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
   const onSubmit: SubmitHandler<ProfileEdit> = async (newData) => {
-    const toastId = toast("Sonner");
-    toast.loading("Loading...", {
-      id: toastId,
-    });
-    console.log(JSON.stringify(newData) === JSON.stringify(profile));
-    console.log("NEW", newData);
-    console.log("OLD", profile);
+    if (JSON.stringify(newData) !== JSON.stringify(profile)) {
+      await supabase.auth.updateUser({
+        data: {
+          phone: newData.phone,
+          company_name: newData.companyName,
+          first_name: newData.firstName,
+          last_name: newData.lastName,
+          additional_info: newData.additionalInfo,
+          occupation: newData.occupation,
+          business_type: newData.businessType,
+          purchase_frequency: newData.purchaseFrequency,
+        },
+      });
+
+      mutate(newData);
+    }
   };
 
   return (
@@ -67,6 +87,7 @@ const ProfileForm = (profile: ProfileEdit) => {
               render={({ field }) => (
                 <Input
                   {...field}
+                  isRequired
                   label="First Name"
                   variant="bordered"
                   isInvalid={!!errors.firstName}
@@ -81,6 +102,7 @@ const ProfileForm = (profile: ProfileEdit) => {
               render={({ field }) => (
                 <Input
                   {...field}
+                  isRequired
                   label="Last Name"
                   variant="bordered"
                   isInvalid={!!errors.lastName}
@@ -106,6 +128,7 @@ const ProfileForm = (profile: ProfileEdit) => {
             render={({ field }) => (
               <Input
                 type={"tel"}
+                isRequired
                 {...field}
                 label="Phone Number"
                 variant="bordered"
@@ -128,6 +151,7 @@ const ProfileForm = (profile: ProfileEdit) => {
               control={control}
               render={({ field }) => (
                 <Select
+                  isRequired
                   scrollShadowProps={{ isEnabled: false }}
                   {...field}
                   label="Occupation"
@@ -157,6 +181,7 @@ const ProfileForm = (profile: ProfileEdit) => {
               control={control}
               render={({ field }) => (
                 <Select
+                  isRequired
                   variant="bordered"
                   label="Purchase Frequency"
                   selectedKeys={[field.value]}
@@ -249,7 +274,9 @@ const ProfileForm = (profile: ProfileEdit) => {
           />
         </div>
       </div>
-      <Button type="submit">Update</Button>
+      <Button disabled={isLoading} type="submit">
+        Update
+      </Button>
     </form>
   );
 };
