@@ -142,10 +142,90 @@ const ProductPage = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
             </Button>
           </div>
         </div>
+
+        {/* Small screen */}
+        <div className="visible justify-center gap-10 md:invisible md:hidden">
+          <div className="grid max-w-2xl grid-rows-2 gap-10">
+            <div className="flex flex-col gap-10 rounded-sm bg-background p-10 shadow-md">
+              <Image
+                src={productData.imageUrl}
+                alt={productData.name}
+                width={500}
+                height={500}
+                className="max-h-[36rem]"
+              />
+              <span className="text-2xl font-bold">{productData.name}</span>
+              <span className="text-sm">{productData.category}</span>
+              <Separator className="my-2" />
+              <span className="flex min-w-fit items-center gap-2">
+                Price:
+                <span className="text-xl font-semibold ">
+                  {Object.keys(productData.price).map(function (key) {
+                    if (ShouldShowPrice(key, session))
+                      return (
+                        "$" +
+                        productData.price[key as keyof typeof productData.price]
+                      );
+
+                    return <Spinner key={key} size="sm" />;
+                  })}
+                </span>
+              </span>
+              <div className="flex whitespace-nowrap">
+                Stock:{" "}
+                <span
+                  className={`flex items-center font-bold ${
+                    productData.stock > 0 ? " text-green-600" : "text-gray-500"
+                  }`}
+                >
+                  <Dot />
+                  {productData.stock > 0 ? (
+                    <span>In stock ({productData.stock} units)</span>
+                  ) : (
+                    <span>Sold out</span>
+                  )}
+                </span>
+              </div>
+              <div className="flex items-center gap-5">
+                <span>Quantity: </span>
+                <Quantity
+                  stock={productData.stock}
+                  setQuantity={setQuantity}
+                  quantity={quantity}
+                  updateData={false}
+                  startQuantity={undefined}
+                  itemId={undefined}
+                />
+              </div>
+              <Button
+                disabled={
+                  isLoading ||
+                  productData.stock === 0 ||
+                  session.session == null
+                }
+                onClick={() =>
+                  mutate({
+                    productId: productData.id,
+                    productQuantity: quantity,
+                  })
+                }
+              >
+                {isLoading && (
+                  <Spinner color="secondary" className="mr-2" size="sm" />
+                )}
+                Add To Cart
+              </Button>
+            </div>
+            <div className="flex flex-col gap-5 rounded-sm bg-background p-10 shadow-md">
+              <span className="  text-xl font-semibold">Description</span>
+              <span className="text-2xl font-bold ">{productData.name}</span>
+              <p>{productData.description}</p>
+            </div>
+          </div>
+        </div>
       </main>
     );
   }
-
   return (
     <main className="flex flex-col justify-center gap-10 bg-secondary px-10 py-5 ">
       <Breadcrumbs>
@@ -155,9 +235,7 @@ const ProductPage = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
       </Breadcrumbs>
       <div className="invisible hidden justify-center gap-10 md:visible md:flex">
         <div className="grid max-w-2xl grid-rows-2 gap-10">
-          <Skeleton className=" rounded-sm shadow-md">
-            <div className="h-[30rem] w-[30rem] rounded-sm bg-default-300"></div>
-          </Skeleton>
+          <Skeleton className=" rounded-sm bg-default-300  shadow-md" />
 
           <div className="flex flex-col gap-5 rounded-sm bg-background p-10 shadow-md">
             <Skeleton className=" h-8 w-36 rounded-sm " />
@@ -167,8 +245,8 @@ const ProductPage = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
             <Skeleton className=" h-6 w-full rounded-sm " />
           </div>
         </div>
-        <div className="top-60 flex h-fit flex-col  gap-10  rounded-sm bg-background px-10 py-5 shadow-md md:sticky lg:top-52 3xl:top-64">
-          <Skeleton className=" h-10 w-96 rounded-sm " />
+        <div className="top-60 flex h-fit w-96 flex-col gap-10  rounded-sm bg-background px-10 py-5 shadow-md md:sticky lg:top-52 3xl:top-64">
+          <Skeleton className=" h-10  grow rounded-sm" />
           <Skeleton className=" h-6 w-32 rounded-sm " />
           <Separator className="my-2" />
           <span className="flex min-w-fit items-center gap-2">
@@ -178,6 +256,32 @@ const ProductPage = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
           <Skeleton className=" h-7 w-48 rounded-sm " />
 
           <Skeleton className=" h-10 w-full rounded-sm " />
+        </div>
+      </div>
+      {/* Small screen */}
+      <div className="visible justify-center gap-10 md:invisible md:hidden">
+        <div className="grid max-w-2xl grid-rows-2 gap-10">
+          <div className="flex flex-col gap-10 rounded-sm bg-background p-10 shadow-md">
+            <Skeleton className=" h-64 rounded-sm bg-default-300 shadow-md" />
+
+            <Skeleton className=" h-10  grow rounded-sm" />
+            <Skeleton className=" h-6 w-32 rounded-sm " />
+            <Separator className="my-2" />
+            <span className="flex min-w-fit items-center gap-2">
+              <Skeleton className=" h-6 w-16 rounded-sm " />
+              <Skeleton className=" h-10 w-12 rounded-sm " />
+            </span>
+            <Skeleton className=" h-7 w-48 rounded-sm " />
+
+            <Skeleton className=" h-10 w-full rounded-sm " />
+          </div>
+          <div className="flex flex-col gap-5 rounded-sm bg-background p-10 shadow-md">
+            <Skeleton className=" h-8 w-36 rounded-sm " />
+            <Skeleton className=" h-10 w-80 rounded-sm " />
+            <Skeleton className=" h-6 w-full rounded-sm " />
+            <Skeleton className=" h-6 w-full rounded-sm " />
+            <Skeleton className=" h-6 w-full rounded-sm " />
+          </div>
         </div>
       </div>
     </main>

@@ -54,16 +54,18 @@ const CartPage = () => {
   }, [router, session]);
 
   return (
-    <main className="flex flex-col gap-5 bg-secondary px-16 py-10">
-      <span className="text-xl font-semibold">My cart</span>
-      <div className="flex gap-8">
+    <main className="flex flex-col gap-5 bg-secondary py-10 lg:px-16">
+      <span className="text-center text-xl font-semibold lg:text-start">
+        My cart
+      </span>
+      <div className="flex flex-col items-center gap-8 lg:flex-row lg:items-start">
         <div className="grow bg-background p-5">
           <Table className="bg-background">
             <TableHeader>
               <TableRow>
                 <TableHead>Product</TableHead>
                 <TableHead className="text-center">Quantity</TableHead>
-                <TableHead className="w-[100px] text-right">Total</TableHead>
+                <TableHead className="text-right md:w-[100px]">Total</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
