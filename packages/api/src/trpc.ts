@@ -10,6 +10,7 @@ import { createPagesServerClient } from "@supabase/auth-helpers-nextjs";
 import type { SupabaseClient, User } from "@supabase/auth-helpers-nextjs";
 import { initTRPC, TRPCError } from "@trpc/server";
 import type { CreateNextContextOptions } from "@trpc/server/adapters/next";
+import Stripe from "stripe";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
@@ -27,6 +28,7 @@ import { prisma } from "@ameleco/db";
 interface CreateContextOptions {
   user: User | null;
   supabase: SupabaseClient | null;
+  stripe: Stripe | null;
 }
 
 /**
@@ -42,6 +44,7 @@ export const createInnerTRPCContext = (opts: CreateContextOptions) => {
   return {
     user: opts.user,
     supabase: opts.supabase,
+    stripe: opts.stripe,
     prisma,
   };
 };
@@ -61,9 +64,15 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
   const user = token
     ? await supabase.auth.getUser(token)
     : await supabase.auth.getUser();
+
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    typescript: true,
+  });
+
   return createInnerTRPCContext({
     user: user.data.user,
     supabase: supabase,
+    stripe: stripe,
   });
 };
 

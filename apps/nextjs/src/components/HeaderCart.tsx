@@ -78,7 +78,7 @@ const HeaderCart = () => {
           {data && isSuccess && data.items && data.items.length > 0 && (
             <div className="flex flex-col gap-5">
               <div className="p-5">
-                <ScrollArea className="h-64 max-h-64 pr-5">
+                <ScrollArea className="h-[65vh] max-h-[65vh] pr-5 md:h-64 md:max-h-64">
                   {data.items.map((item, i) => (
                     <div key={item.id}>
                       <CartProduct

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Input,
   Select,
@@ -63,7 +63,6 @@ const RegisterEmailForm = () => {
   const [isVisible, setIsVisible] = useState(false);
   const toggleVisibility = () => setIsVisible(!isVisible);
 
-  const { mutate: createCart } = api.shop.createCart.useMutation();
   const onSubmit: SubmitHandler<signUpEmail> = async (data) => {
     const toastId = toast("Sonner");
     toast.loading("Loading...", {
@@ -91,7 +90,6 @@ const RegisterEmailForm = () => {
         id: toastId,
       });
     } else {
-      createCart();
       toast.success(
         `Confirm your email ${result.data.user?.email} to log in.`,
         {

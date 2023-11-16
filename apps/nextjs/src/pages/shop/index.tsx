@@ -43,7 +43,7 @@ const Shop = () => {
 export async function getStaticProps() {
   const helpers = createServerSideHelpers({
     router: appRouter,
-    ctx: { prisma: prisma, user: null, supabase: null },
+    ctx: { prisma: prisma, user: null, supabase: null, stripe: null },
     transformer: superjson,
   });
 

@@ -41,6 +41,8 @@
     "SKIP_ENV_VALIDATION",
     "VERCEL",
     "VERCEL_URL",
-    "ANALYZE"
+    "ANALYZE",
+    "STRIPE_SECRET_KEY",
+    "STRIPE_PUBLISHABLE_KEY"
   ]
 }
