@@ -21,6 +21,17 @@ const DynamicCreateProductDialog = dynamic(
   },
 );
 
+const DynamicCreateCategoryDialog = dynamic(
+  () => import("../../components/CreateCategoryDialog"),
+  {
+    loading: () => (
+      <Button size={"lg"} variant={"outline"}>
+        Add Category
+      </Button>
+    ),
+  },
+);
+
 const Shop = () => {
   const products = api.shop.allProducts.useQuery();
   const user = useUser();
@@ -46,9 +57,7 @@ const Shop = () => {
           <Separator />
           <div className="flex items-center justify-center gap-10">
             <DynamicCreateProductDialog />
-            <Button size={"lg"} variant={"outline"}>
-              Add Category
-            </Button>
+            <DynamicCreateCategoryDialog />
           </div>
           <Separator />
         </>

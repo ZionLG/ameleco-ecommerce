@@ -34,7 +34,7 @@ const CartProduct = ({
     <div className="flex gap-3">
       <Image
         alt={product.name}
-        src={product.avatarUrl}
+        src={product.imageUrl}
         width={100}
         height={150}
       />
