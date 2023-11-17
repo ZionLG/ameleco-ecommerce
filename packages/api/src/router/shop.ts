@@ -2,7 +2,12 @@ import type { Groups } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
-import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
+import {
+  createTRPCRouter,
+  protectedProcedure,
+  publicProcedure,
+  staffProcedure,
+} from "../trpc";
 
 export const shopRouter = createTRPCRouter({
   createCart: protectedProcedure.mutation(async ({ ctx }) => {
@@ -10,6 +15,56 @@ export const shopRouter = createTRPCRouter({
       data: { userId: ctx.user.id },
     });
   }),
+  // createPaymentLink: protectedProcedure.mutation(async ({ ctx }) => {
+  //   if (ctx.stripe == null) {
+  //     return null;
+  //   }
+  //   let group;
+
+  //   if (ctx.user && ctx.supabase) {
+  //     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  //     const { data, error } = await ctx.supabase.rpc("get_my_claim", {
+  //       claim: "AMELECO_group",
+  //     });
+  //     if (error) {
+  //       return;
+  //     }
+
+  //     group = data as Groups;
+  //   } else {
+  //     group = "VISITOR" as Groups;
+  //   }
+  //   const cart = await ctx.prisma.cart.findUnique({
+  //     where: { userId: ctx.user.id },
+  //     select: {
+  //       id: true,
+  //       items: {
+  //         orderBy: {
+  //           createdAt: "asc",
+  //         },
+  //         select: {
+  //           quantity: true,
+  //           id: true,
+
+  //           product: {
+  //             include: {
+  //               price: true,
+  //             },
+  //           },
+  //         },
+  //       },
+  //     },
+  //   });
+
+  //   const paymentLink = await ctx.stripe.paymentLinks.create({
+  //     line_items: [{
+  //       price: {
+
+  //       },
+  //       quantity: 1,
+  //     }],
+  //   });
+  // }),
   getProduct: protectedProcedure
     .input(z.object({ productId: z.string() }))
     .query(async ({ input, ctx }) => {
@@ -328,4 +383,13 @@ export const shopRouter = createTRPCRouter({
       },
     });
   }),
+  addProduct: staffProcedure
+    .input(z.object({ stock: z.number().min(0) }))
+    .mutation(async ({ input, ctx }) => {
+      const product = await ctx.prisma.product.create({
+        data: {},
+      });
+
+      return product;
+    }),
 });
