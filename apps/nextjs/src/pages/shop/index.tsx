@@ -1,6 +1,8 @@
 import React from "react";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import { BreadcrumbItem, Breadcrumbs } from "@nextui-org/react";
+import { useUser } from "@supabase/auth-helpers-react";
 import { createServerSideHelpers } from "@trpc/react-query/server";
 import superjson from "superjson";
 
@@ -9,9 +11,30 @@ import { prisma } from "@ameleco/db";
 
 import { api } from "~/utils/api";
 import ProductCard from "~/components/ProductCard";
+import { Button } from "~/components/ui/button";
+import { Separator } from "~/components/ui/separator";
+
+const DynamicCreateProductDialog = dynamic(
+  () => import("../../components/CreateProductDialog"),
+  {
+    loading: () => <Button size={"lg"}>Add Product</Button>,
+  },
+);
+
+const DynamicCreateCategoryDialog = dynamic(
+  () => import("../../components/CreateCategoryDialog"),
+  {
+    loading: () => (
+      <Button size={"lg"} variant={"outline"}>
+        Add Category
+      </Button>
+    ),
+  },
+);
 
 const Shop = () => {
   const products = api.shop.allProducts.useQuery();
+  const user = useUser();
 
   return (
     <main className="flex flex-col justify-center gap-10 px-10 py-5 ">
@@ -29,6 +52,16 @@ const Shop = () => {
         <BreadcrumbItem href="/">Home</BreadcrumbItem>
         <BreadcrumbItem href="/shop">Shop</BreadcrumbItem>
       </Breadcrumbs>
+      {user?.app_metadata.AMELECO_is_staff && (
+        <>
+          <Separator />
+          <div className="flex items-center justify-center gap-10">
+            <DynamicCreateProductDialog />
+            <DynamicCreateCategoryDialog />
+          </div>
+          <Separator />
+        </>
+      )}
       <div className=" mt-10 grid grid-cols-1 justify-center gap-x-32 gap-y-10 md:grid-cols-2  xl:grid-cols-3 2xl:grid-cols-4">
         {products.data?.map((product) => (
           <ProductCard product={product} key={product.id} />

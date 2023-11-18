@@ -85,7 +85,7 @@ const ProductPage = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
           </div>
           <div className="top-60 flex h-fit flex-col  gap-10  rounded-sm bg-background px-10 py-5 shadow-md md:sticky lg:top-52 3xl:top-64">
             <span className="text-2xl font-bold">{productData.name}</span>
-            <span className="text-sm">{productData.category}</span>
+            <span className="text-sm">{productData.category.name}</span>
             <Separator className="my-2" />
             <span className="flex min-w-fit items-center gap-2">
               Price:
@@ -155,7 +155,7 @@ const ProductPage = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
                 className="max-h-[36rem]"
               />
               <span className="text-2xl font-bold">{productData.name}</span>
-              <span className="text-sm">{productData.category}</span>
+              <span className="text-sm">{productData.category.name}</span>
               <Separator className="my-2" />
               <span className="flex min-w-fit items-center gap-2">
                 Price:

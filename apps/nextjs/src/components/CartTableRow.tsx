@@ -34,7 +34,7 @@ const CartTableRow = ({
       <TableCell className="flex gap-3 font-medium">
         <Image
           alt={product.name}
-          src={product.avatarUrl}
+          src={product.imageUrl}
           width={75}
           height={75}
         />

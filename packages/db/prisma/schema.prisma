@@ -7,7 +7,7 @@ datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
-  schemas   = ["public"]
+  schemas   = ["prisma"]
 }
 
 model Profile { 
@@ -29,7 +29,7 @@ model Profile {
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   @@map("user_profile")
-  @@schema("public")
+  @@schema("prisma")
 }
 
 model Pricing {
@@ -42,7 +42,7 @@ model Pricing {
   professional Float
   vip Float
   @@map("pricing")
-  @@schema("public")
+  @@schema("prisma")
 }
 
 model Product {
@@ -53,12 +53,22 @@ model Product {
   priceId     String @unique @map("price_id") @db.Uuid
   stock       Int
   imageUrl    String @map("image_url")
-  avatarUrl   String @map("avatar_url")
-  category    String
+  category    Category @relation(fields: [categoryId], references: [id])
+  categoryId String @db.Uuid @map("category_id")
   cartItems CartItem[]
 
+
   @@map("product")
-  @@schema("public")
+  @@schema("prisma")
+}
+
+model Category {
+  id     String  @id @default(dbgenerated("(uuid_generate_v4())")) @db.Uuid
+  name        String @unique
+  products Product[]
+
+  @@map("category")
+  @@schema("prisma")
 }
 
 
@@ -70,7 +80,7 @@ model Cart {
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  @@schema("public")
+  @@schema("prisma")
   @@map("cart")
 
 }
@@ -89,7 +99,7 @@ model CartItem {
   
 
   @@map("cart_item")
-  @@schema("public")
+  @@schema("prisma")
 }
 
 
@@ -98,7 +108,7 @@ enum BusinessType {
   RESIDENTIAL_NEW_CONSTRUCTION
   COMMERCIAL_RENOVATION
   COMMERCIAL_NEW_CONSTRUCTION
-  @@schema("public")
+  @@schema("prisma")
   @@map("business_type")
 }
 enum PurchaseFrequency {
@@ -108,7 +118,7 @@ enum PurchaseFrequency {
   WEEKLY
   DAILY
   PROJECT_BASED
-  @@schema("public")
+  @@schema("prisma")
   @@map("purchase_frequency")
 }
 
@@ -121,13 +131,13 @@ enum Occupation {
   ELECTRICIAN
   ELECTRICAL_CONTRACTOR
   OTHER
-  @@schema("public")
+  @@schema("prisma")
   @@map("occupation")
 }
 model GroupTemp {
   group Groups @id
   @@map("group_temp")
-  @@schema("public")
+  @@schema("prisma")
 }
 enum Groups {
   VISITOR
@@ -136,7 +146,7 @@ enum Groups {
   CONTRACTOR
   PROFESSIONAL
   VIP
-  @@schema("public")
+  @@schema("prisma")
   @@map("groups")
 
 }

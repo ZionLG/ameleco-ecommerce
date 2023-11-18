@@ -2,7 +2,13 @@ import type { Groups } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
-import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
+import { productCreationSchema } from "../schemas";
+import {
+  createTRPCRouter,
+  protectedProcedure,
+  publicProcedure,
+  staffProcedure,
+} from "../trpc";
 
 export const shopRouter = createTRPCRouter({
   createCart: protectedProcedure.mutation(async ({ ctx }) => {
@@ -10,6 +16,56 @@ export const shopRouter = createTRPCRouter({
       data: { userId: ctx.user.id },
     });
   }),
+  // createPaymentLink: protectedProcedure.mutation(async ({ ctx }) => {
+  //   if (ctx.stripe == null) {
+  //     return null;
+  //   }
+  //   let group;
+
+  //   if (ctx.user && ctx.supabase) {
+  //     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  //     const { data, error } = await ctx.supabase.rpc("get_my_claim", {
+  //       claim: "AMELECO_group",
+  //     });
+  //     if (error) {
+  //       return;
+  //     }
+
+  //     group = data as Groups;
+  //   } else {
+  //     group = "VISITOR" as Groups;
+  //   }
+  //   const cart = await ctx.prisma.cart.findUnique({
+  //     where: { userId: ctx.user.id },
+  //     select: {
+  //       id: true,
+  //       items: {
+  //         orderBy: {
+  //           createdAt: "asc",
+  //         },
+  //         select: {
+  //           quantity: true,
+  //           id: true,
+
+  //           product: {
+  //             include: {
+  //               price: true,
+  //             },
+  //           },
+  //         },
+  //       },
+  //     },
+  //   });
+
+  //   const paymentLink = await ctx.stripe.paymentLinks.create({
+  //     line_items: [{
+  //       price: {
+
+  //       },
+  //       quantity: 1,
+  //     }],
+  //   });
+  // }),
   getProduct: protectedProcedure
     .input(z.object({ productId: z.string() }))
     .query(async ({ input, ctx }) => {
@@ -174,6 +230,9 @@ export const shopRouter = createTRPCRouter({
         });
       }
     }),
+  getCategories: publicProcedure.query(({ ctx }) => {
+    return ctx.prisma.category.findMany();
+  }),
   changeItemQuantity: protectedProcedure
     .input(z.object({ itemId: z.string(), productQuantity: z.number().min(1) }))
     .mutation(async ({ input: { itemId, productQuantity }, ctx }) => {
@@ -248,6 +307,8 @@ export const shopRouter = createTRPCRouter({
       return ctx.prisma.product.findUnique({
         where: { id: input.productId },
         include: {
+          category: true,
+
           price: {
             select: {
               contractor: group === "CONTRACTOR",
@@ -284,6 +345,7 @@ export const shopRouter = createTRPCRouter({
       return ctx.prisma.product.findUnique({
         where: { name: input.productName },
         include: {
+          category: true,
           price: {
             select: {
               contractor: group === "CONTRACTOR",
@@ -315,6 +377,7 @@ export const shopRouter = createTRPCRouter({
     }
     return ctx.prisma.product.findMany({
       include: {
+        category: true,
         price: {
           select: {
             contractor: group === "CONTRACTOR",
@@ -328,4 +391,53 @@ export const shopRouter = createTRPCRouter({
       },
     });
   }),
+  addProduct: staffProcedure
+    .input(productCreationSchema)
+    .mutation(async ({ input, ctx }) => {
+      const category = await ctx.prisma.category.findUnique({
+        where: { name: input.category },
+      });
+
+      if (category == null) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Category not found.",
+        });
+      }
+      const { pricing: pricingInput } = input;
+      const pricing = await ctx.prisma.pricing.create({
+        data: {
+          contractor: pricingInput.contractor,
+          customer: pricingInput.customer,
+          frequent: pricingInput.frequent,
+          professional: pricingInput.professional,
+          vip: pricingInput.vip,
+          visitor: pricingInput.visitor,
+        },
+      });
+
+      const product = await ctx.prisma.product.create({
+        data: {
+          imageUrl: input.imageUrl,
+          stock: input.stock,
+          categoryId: category.id,
+          name: input.name,
+          description: input.description,
+          priceId: pricing.id,
+        },
+      });
+
+      return product;
+    }),
+  addCategory: staffProcedure
+    .input(
+      z.object({
+        name: z.string().min(1),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      return await ctx.prisma.category.create({
+        data: { name: input.name },
+      });
+    }),
 });
