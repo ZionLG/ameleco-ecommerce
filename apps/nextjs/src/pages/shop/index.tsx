@@ -55,6 +55,24 @@ const Shop = () => {
       <Breadcrumbs>
         <BreadcrumbItem href="/">Home</BreadcrumbItem>
         <BreadcrumbItem href="/shop">Shop</BreadcrumbItem>
+        {urlCategory && (
+          <BreadcrumbItem href={`/shop?category=${urlCategory as string}`}>
+            {urlCategory}
+          </BreadcrumbItem>
+        )}
+        {searchTerm && (
+          <BreadcrumbItem
+            href={
+              urlCategory
+                ? `/shop?category=${urlCategory as string}?q=${
+                    searchTerm as string
+                  }`
+                : `/shop?q=${searchTerm as string}`
+            }
+          >
+            {searchTerm}
+          </BreadcrumbItem>
+        )}
       </Breadcrumbs>
       {user?.app_metadata.AMELECO_is_staff && (
         <>
