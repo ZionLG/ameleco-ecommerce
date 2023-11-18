@@ -76,7 +76,7 @@ const ProductSearch = ({ maxResults = 5 }: SearchProps) => {
         >
           <Image
             alt={product.name}
-            src={product.avatarUrl}
+            src={product.imageUrl}
             width={50}
             height={50}
             className="rounded-md"

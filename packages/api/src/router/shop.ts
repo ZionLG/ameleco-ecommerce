@@ -2,6 +2,7 @@ import type { Groups } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
+import { productCreationSchema } from "../schemas";
 import {
   createTRPCRouter,
   protectedProcedure,
@@ -229,6 +230,9 @@ export const shopRouter = createTRPCRouter({
         });
       }
     }),
+  getCategories: publicProcedure.query(({ ctx }) => {
+    return ctx.prisma.category.findMany();
+  }),
   changeItemQuantity: protectedProcedure
     .input(z.object({ itemId: z.string(), productQuantity: z.number().min(1) }))
     .mutation(async ({ input: { itemId, productQuantity }, ctx }) => {
@@ -303,6 +307,8 @@ export const shopRouter = createTRPCRouter({
       return ctx.prisma.product.findUnique({
         where: { id: input.productId },
         include: {
+          category: true,
+
           price: {
             select: {
               contractor: group === "CONTRACTOR",
@@ -339,6 +345,7 @@ export const shopRouter = createTRPCRouter({
       return ctx.prisma.product.findUnique({
         where: { name: input.productName },
         include: {
+          category: true,
           price: {
             select: {
               contractor: group === "CONTRACTOR",
@@ -370,6 +377,7 @@ export const shopRouter = createTRPCRouter({
     }
     return ctx.prisma.product.findMany({
       include: {
+        category: true,
         price: {
           select: {
             contractor: group === "CONTRACTOR",
@@ -384,12 +392,52 @@ export const shopRouter = createTRPCRouter({
     });
   }),
   addProduct: staffProcedure
-    .input(z.object({ stock: z.number().min(0) }))
+    .input(productCreationSchema)
     .mutation(async ({ input, ctx }) => {
+      const category = await ctx.prisma.category.findUnique({
+        where: { name: input.category },
+      });
+
+      if (category == null) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Category not found.",
+        });
+      }
+      const { pricing: pricingInput } = input;
+      const pricing = await ctx.prisma.pricing.create({
+        data: {
+          contractor: pricingInput.contractor,
+          customer: pricingInput.customer,
+          frequent: pricingInput.frequent,
+          professional: pricingInput.professional,
+          vip: pricingInput.vip,
+          visitor: pricingInput.visitor,
+        },
+      });
+
       const product = await ctx.prisma.product.create({
-        data: {},
+        data: {
+          imageUrl: input.imageUrl,
+          stock: input.stock,
+          categoryId: category.id,
+          name: input.name,
+          description: input.description,
+          priceId: pricing.id,
+        },
       });
 
       return product;
+    }),
+  addCategory: staffProcedure
+    .input(
+      z.object({
+        name: z.string().min(1),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      return await ctx.prisma.category.create({
+        data: { name: input.name },
+      });
     }),
 });
