@@ -16,7 +16,10 @@ const ProductCard = ({ product }: ProductCardProps) => {
   const session = useSessionContext();
 
   return (
-    <Link href={`/shop/${encodeURIComponent(product.name)}`}>
+    <Link
+      href={`/shop/${encodeURIComponent(product.name)}`}
+      className="w-fit justify-self-center"
+    >
       <Card shadow="sm" isPressable className="h-full w-64">
         <CardBody className="items-center  gap-2 overflow-visible p-2">
           <Image

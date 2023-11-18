@@ -6,15 +6,25 @@ import { useRouter } from "next/router";
 import { BreadcrumbItem, Breadcrumbs } from "@nextui-org/react";
 import { useUser } from "@supabase/auth-helpers-react";
 import { createServerSideHelpers } from "@trpc/react-query/server";
+import { ChevronDown } from "lucide-react";
 import superjson from "superjson";
 
 import { appRouter } from "@ameleco/api";
 import { prisma } from "@ameleco/db";
 
 import { api } from "~/utils/api";
+import { cn } from "~/utils/utils";
 import ProductCard from "~/components/ProductCard";
-import { Button } from "~/components/ui/button";
+import { Button, buttonVariants } from "~/components/ui/button";
 import { Separator } from "~/components/ui/separator";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "~/components/ui/sheet";
 
 const DynamicCreateProductDialog = dynamic(
   () => import("../../components/CreateProductDialog"),
@@ -55,6 +65,24 @@ const Shop = () => {
       <Breadcrumbs>
         <BreadcrumbItem href="/">Home</BreadcrumbItem>
         <BreadcrumbItem href="/shop">Shop</BreadcrumbItem>
+        {urlCategory && (
+          <BreadcrumbItem href={`/shop?category=${urlCategory as string}`}>
+            {urlCategory}
+          </BreadcrumbItem>
+        )}
+        {searchTerm && (
+          <BreadcrumbItem
+            href={
+              urlCategory
+                ? `/shop?category=${urlCategory as string}?q=${
+                    searchTerm as string
+                  }`
+                : `/shop?q=${searchTerm as string}`
+            }
+          >
+            {searchTerm}
+          </BreadcrumbItem>
+        )}
       </Breadcrumbs>
       {user?.app_metadata.AMELECO_is_staff && (
         <>
@@ -66,8 +94,50 @@ const Shop = () => {
           <Separator />
         </>
       )}
-      <div className="flex gap-5">
-        <div className="text-md flex w-[24rem] flex-col gap-2 rounded-md bg-secondary p-5">
+      <div className="flex flex-col lg:flex-row lg:gap-5">
+        <div className="rounded-md bg-secondary lg:invisible  lg:hidden">
+          <Sheet>
+            <SheetTrigger className="flex w-full items-center justify-between p-5">
+              <span className="text-xl font-bold text-primary">Categories</span>
+              <ChevronDown className="h-5 w-5 shrink-0 " />
+            </SheetTrigger>
+            <SheetContent side={"bottom"}>
+              <SheetHeader>
+                <SheetTitle>Categories</SheetTitle>
+              </SheetHeader>
+              <div className="flex flex-col">
+                {categories.data?.map((category) => (
+                  <Link
+                    href={
+                      urlCategory === category.name
+                        ? {
+                            pathname: "/shop",
+                          }
+                        : {
+                            pathname: "/shop",
+                            query: {
+                              category: encodeURIComponent(category.name),
+                            },
+                          }
+                    }
+                    key={category.id}
+                    className={` ${cn(
+                      buttonVariants({
+                        variant: "link",
+                        className:
+                          urlCategory === category.name &&
+                          "font-semibold text-blue-400",
+                      }),
+                    )} `}
+                  >
+                    {category.name}
+                  </Link>
+                ))}
+              </div>
+            </SheetContent>
+          </Sheet>
+        </div>
+        <div className="text-md invisible hidden w-[18rem] flex-col gap-2 rounded-md bg-secondary p-5 lg:visible lg:flex">
           <span className="text-xl font-bold text-primary">Categories</span>
           {categories.data?.map((category) => (
             <Link
@@ -82,15 +152,23 @@ const Shop = () => {
                     }
               }
               key={category.id}
-              className={`${
-                urlCategory === category.name && "font-semibold text-blue-400"
-              }`}
+              className={` ${cn(
+                buttonVariants({
+                  variant: "link",
+                  className: `
+                        self-start p-0
+                    ${
+                      urlCategory === category.name &&
+                      " font-semibold text-blue-400"
+                    }`,
+                }),
+              )} `}
             >
               {category.name}
             </Link>
           ))}
         </div>
-        <div className=" mt-10 grid grid-cols-1 justify-center gap-x-32 gap-y-10 md:grid-cols-2  xl:grid-cols-3 2xl:grid-cols-5">
+        <div className=" mt-10 grid grid-cols-1 justify-center  gap-x-32 gap-y-10 md:grid-cols-2  xl:grid-cols-3 3xl:grid-cols-4">
           {products.data?.map((product) => {
             if (
               (!urlCategory || product.category.name === urlCategory) &&
