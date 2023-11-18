@@ -18,23 +18,10 @@ interface SearchProps {
   maxResults?: number;
 }
 
-export const categories = [
-  {
-    label: "All Categories",
-    value: "all categories",
-  },
-  {
-    label: "Breaker",
-    value: "breaker",
-  },
-  {
-    label: "Cooper",
-    value: "cooper",
-  },
-];
-
 const ProductSearch = ({ maxResults = 5 }: SearchProps) => {
   const { data } = api.shop.allProducts.useQuery();
+  const { data: categoryData } = api.shop.getCategories.useQuery();
+  const [category, setCategory] = useState<string>("all categories");
 
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [filtered, setFiltered] = useState<
@@ -46,7 +33,10 @@ const ProductSearch = ({ maxResults = 5 }: SearchProps) => {
     if (searchTerm.length > 0 && data) {
       const tempArray = [] as NonNullable<RouterOutputs["shop"]["allProducts"]>;
       for (let i = 0; i < data.length && tempArray.length <= maxResults; i++) {
-        if (data[i]!.name.toLowerCase().includes(searchTerm.toLowerCase())) {
+        if (
+          data[i]!.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+          (category === "all categories" || data[i]!.category.name === category)
+        ) {
           tempArray.push(data[i]!);
         }
       }
@@ -55,7 +45,7 @@ const ProductSearch = ({ maxResults = 5 }: SearchProps) => {
     } else {
       setFiltered([]);
     }
-  }, [data, maxResults, searchTerm]);
+  }, [category, data, maxResults, searchTerm]);
 
   const handleOnSelect = (itemName: string) => {
     console.log("seleced");
@@ -92,14 +82,21 @@ const ProductSearch = ({ maxResults = 5 }: SearchProps) => {
     <div className="group/display relative flex flex-col p-2">
       <div className={`flex items-center`}>
         <div className="min-w-fit">
-          <Select defaultValue="all categories">
+          <Select
+            defaultValue="all categories"
+            value={category}
+            onValueChange={(selected) => {
+              setCategory(selected);
+            }}
+          >
             <SelectTrigger className="h-11 rounded-r-none bg-secondary text-xs font-semibold focus:ring-0 focus:ring-offset-0 md:text-medium">
               <SelectValue placeholder="Select a category" />
             </SelectTrigger>
             <SelectContent>
-              {categories.map((category) => (
-                <SelectItem key={category.value} value={category.value}>
-                  {category.label}
+              <SelectItem value={"all categories"}>All Categories</SelectItem>
+              {categoryData?.map((category) => (
+                <SelectItem key={category.id} value={category.name}>
+                  {category.name}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -123,6 +120,15 @@ const ProductSearch = ({ maxResults = 5 }: SearchProps) => {
         </div>
         <Search
           cursor={"pointer"}
+          onClick={() => {
+            void router.push({
+              pathname: "/shop",
+              query:
+                category === "all categories"
+                  ? { q: searchTerm }
+                  : { category: category, q: searchTerm },
+            });
+          }}
           className="h-11 w-16 rounded-r-md bg-blue-950 p-2 text-white"
         />
         {/* {

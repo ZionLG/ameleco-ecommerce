@@ -17,8 +17,8 @@ const ProductCard = ({ product }: ProductCardProps) => {
 
   return (
     <Link href={`/shop/${encodeURIComponent(product.name)}`}>
-      <Card shadow="sm" isPressable>
-        <CardBody className="items-center  overflow-visible p-2">
+      <Card shadow="sm" isPressable className="h-full w-64">
+        <CardBody className="items-center  gap-2 overflow-visible p-2">
           <Image
             as={NextImage}
             shadow="sm"
@@ -29,9 +29,9 @@ const ProductCard = ({ product }: ProductCardProps) => {
             className="h-[140px]  border-1  object-contain"
             src={product.imageUrl}
           />
+          <b>{product.name}</b>
         </CardBody>
         <CardFooter className=" flex-col items-start p-5 text-small">
-          <b>{product.name}</b>
           <div className=" flex">
             <span className="text-xl text-default-500 ">
               {Object.keys(product.price).map(function (key) {
