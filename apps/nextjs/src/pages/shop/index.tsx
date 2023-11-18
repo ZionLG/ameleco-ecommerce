@@ -35,7 +35,7 @@ const DynamicCreateCategoryDialog = dynamic(
 const Shop = () => {
   const products = api.shop.allProducts.useQuery();
   const user = useUser();
-
+  const categories = api.shop.getCategories.useQuery();
   return (
     <main className="flex flex-col justify-center gap-10 px-10 py-5 ">
       <div className="flex flex-col items-center justify-around gap-10 bg-[#F2F2F7] p-5 font-bold md:flex-row">
@@ -62,10 +62,18 @@ const Shop = () => {
           <Separator />
         </>
       )}
-      <div className=" mt-10 grid grid-cols-1 justify-center gap-x-32 gap-y-10 md:grid-cols-2  xl:grid-cols-3 2xl:grid-cols-4">
-        {products.data?.map((product) => (
-          <ProductCard product={product} key={product.id} />
-        ))}
+      <div className="flex gap-5">
+        <div className="text-md flex w-[24rem] flex-col gap-2 rounded-md bg-secondary p-5">
+          <span className="text-xl font-bold text-primary">Categories</span>
+          {categories.data?.map((category) => (
+            <span key={category.id}>{category.name}</span>
+          ))}
+        </div>
+        <div className=" mt-10 grid grid-cols-1 justify-center gap-x-32 gap-y-10 md:grid-cols-2  xl:grid-cols-3 2xl:grid-cols-4">
+          {products.data?.map((product) => (
+            <ProductCard product={product} key={product.id} />
+          ))}
+        </div>
       </div>
 
       {/* <pre> {JSON.stringify(products.data, null, 4)}</pre> */}
@@ -81,7 +89,7 @@ export async function getStaticProps() {
   });
 
   await helpers.shop.allProducts.prefetch();
-
+  await helpers.shop.getCategories.prefetch();
   return {
     props: {
       trpcState: helpers.dehydrate(),

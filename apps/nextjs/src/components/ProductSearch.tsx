@@ -18,23 +18,9 @@ interface SearchProps {
   maxResults?: number;
 }
 
-export const categories = [
-  {
-    label: "All Categories",
-    value: "all categories",
-  },
-  {
-    label: "Breaker",
-    value: "breaker",
-  },
-  {
-    label: "Cooper",
-    value: "cooper",
-  },
-];
-
 const ProductSearch = ({ maxResults = 5 }: SearchProps) => {
   const { data } = api.shop.allProducts.useQuery();
+  const { data: categoryData } = api.shop.getCategories.useQuery();
 
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [filtered, setFiltered] = useState<
@@ -97,9 +83,10 @@ const ProductSearch = ({ maxResults = 5 }: SearchProps) => {
               <SelectValue placeholder="Select a category" />
             </SelectTrigger>
             <SelectContent>
-              {categories.map((category) => (
-                <SelectItem key={category.value} value={category.value}>
-                  {category.label}
+              <SelectItem value={"all categories"}>All Categories</SelectItem>
+              {categoryData?.map((category) => (
+                <SelectItem key={category.id} value={category.name}>
+                  {category.name}
                 </SelectItem>
               ))}
             </SelectContent>
