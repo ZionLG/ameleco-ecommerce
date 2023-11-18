@@ -36,9 +36,10 @@ const CreateCategoryDialog = () => {
       name: "",
     },
   });
+  const utils = api.useContext();
   const { mutate, isLoading } = api.shop.addCategory.useMutation({
     onSuccess: () => {
-      //void utils.auth.me.invalidate();
+      void utils.shop.getCategories.invalidate();
       toast.success("Category added successfully.");
     },
     onError: (error) => {

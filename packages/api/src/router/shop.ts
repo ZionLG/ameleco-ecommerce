@@ -2,6 +2,7 @@ import type { Groups } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
+import { productCreationSchema } from "../schemas";
 import {
   createTRPCRouter,
   protectedProcedure,
@@ -229,6 +230,9 @@ export const shopRouter = createTRPCRouter({
         });
       }
     }),
+  getCategories: publicProcedure.query(({ ctx }) => {
+    return ctx.prisma.category.findMany();
+  }),
   changeItemQuantity: protectedProcedure
     .input(z.object({ itemId: z.string(), productQuantity: z.number().min(1) }))
     .mutation(async ({ input: { itemId, productQuantity }, ctx }) => {
@@ -388,23 +392,7 @@ export const shopRouter = createTRPCRouter({
     });
   }),
   addProduct: staffProcedure
-    .input(
-      z.object({
-        stock: z.number().min(0),
-        imageUrl: z.string(),
-        category: z.string(),
-        name: z.string(),
-        description: z.string().optional(),
-        pricing: z.object({
-          visitor: z.number(),
-          customer: z.number(),
-          contractor: z.number(),
-          frequent: z.number(),
-          professional: z.number(),
-          vip: z.number(),
-        }),
-      }),
-    )
+    .input(productCreationSchema)
     .mutation(async ({ input, ctx }) => {
       const category = await ctx.prisma.category.findUnique({
         where: { name: input.category },
