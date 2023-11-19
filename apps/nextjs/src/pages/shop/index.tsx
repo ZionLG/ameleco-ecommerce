@@ -16,6 +16,7 @@ import { api } from "~/utils/api";
 import { cn } from "~/utils/utils";
 import ProductCard from "~/components/ProductCard";
 import { Button, buttonVariants } from "~/components/ui/button";
+import { ScrollArea } from "~/components/ui/scroll-area";
 import { Separator } from "~/components/ui/separator";
 import {
   Sheet,
@@ -105,39 +106,41 @@ const Shop = () => {
               <SheetHeader>
                 <SheetTitle>Categories</SheetTitle>
               </SheetHeader>
-              <div className="flex flex-col">
-                {categories.data?.map((category) => (
-                  <Link
-                    href={
-                      urlCategory === category.name
-                        ? {
-                            pathname: "/shop",
-                          }
-                        : {
-                            pathname: "/shop",
-                            query: {
-                              category: encodeURIComponent(category.name),
-                            },
-                          }
-                    }
-                    key={category.id}
-                    className={` ${cn(
-                      buttonVariants({
-                        variant: "link",
-                        className:
-                          urlCategory === category.name &&
-                          "font-semibold text-blue-400",
-                      }),
-                    )} `}
-                  >
-                    {category.name}
-                  </Link>
-                ))}
-              </div>
+              <ScrollArea className="h-36 max-h-36 pr-3">
+                <div className="flex flex-col">
+                  {categories.data?.map((category) => (
+                    <Link
+                      href={
+                        urlCategory === category.name
+                          ? {
+                              pathname: "/shop",
+                            }
+                          : {
+                              pathname: "/shop",
+                              query: {
+                                category: encodeURIComponent(category.name),
+                              },
+                            }
+                      }
+                      key={category.id}
+                      className={` ${cn(
+                        buttonVariants({
+                          variant: "link",
+                          className:
+                            urlCategory === category.name &&
+                            "font-semibold text-blue-400",
+                        }),
+                      )} `}
+                    >
+                      {category.name}
+                    </Link>
+                  ))}
+                </div>
+              </ScrollArea>
             </SheetContent>
           </Sheet>
         </div>
-        <div className="text-md invisible hidden w-[18rem] flex-col gap-2 rounded-md bg-secondary p-5 lg:visible lg:flex">
+        <div className="text-md invisible hidden w-[18rem] flex-col rounded-md bg-secondary p-5 lg:visible lg:flex">
           <span className="text-xl font-bold text-primary">Categories</span>
           {categories.data?.map((category) => (
             <Link
@@ -168,7 +171,7 @@ const Shop = () => {
             </Link>
           ))}
         </div>
-        <div className=" mt-10 grid grid-cols-1 justify-center  gap-x-32 gap-y-10 md:grid-cols-2  xl:grid-cols-3 3xl:grid-cols-4">
+        <div className=" mt-10 grid h-fit grid-cols-1  justify-center gap-x-32 gap-y-10  md:grid-cols-2 xl:grid-cols-3 3xl:grid-cols-4">
           {products.data?.map((product) => {
             if (
               (!urlCategory || product.category.name === urlCategory) &&
