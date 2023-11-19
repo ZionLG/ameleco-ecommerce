@@ -1,5 +1,6 @@
 import type { Groups } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
+import type Stripe from "stripe";
 import { z } from "zod";
 
 import { productCreationSchema } from "../schemas";
@@ -16,56 +17,65 @@ export const shopRouter = createTRPCRouter({
       data: { userId: ctx.user.id },
     });
   }),
-  // createPaymentLink: protectedProcedure.mutation(async ({ ctx }) => {
-  //   if (ctx.stripe == null) {
-  //     return null;
-  //   }
-  //   let group;
+  createPaymentLink: protectedProcedure.mutation(async ({ ctx }) => {
+    if (ctx.stripe == null) {
+      return null;
+    }
+    let group = "VISITOR" as Groups;
 
-  //   if (ctx.user && ctx.supabase) {
-  //     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  //     const { data, error } = await ctx.supabase.rpc("get_my_claim", {
-  //       claim: "AMELECO_group",
-  //     });
-  //     if (error) {
-  //       return;
-  //     }
+    if (ctx.user && ctx.supabase) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const { data, error } = await ctx.supabase.rpc("get_my_claim", {
+        claim: "AMELECO_group",
+      });
+      if (error) {
+        return;
+      }
 
-  //     group = data as Groups;
-  //   } else {
-  //     group = "VISITOR" as Groups;
-  //   }
-  //   const cart = await ctx.prisma.cart.findUnique({
-  //     where: { userId: ctx.user.id },
-  //     select: {
-  //       id: true,
-  //       items: {
-  //         orderBy: {
-  //           createdAt: "asc",
-  //         },
-  //         select: {
-  //           quantity: true,
-  //           id: true,
+      group = data as Groups;
+    }
+    const cart = await ctx.prisma.cart.findUnique({
+      where: { userId: ctx.user.id },
+      select: {
+        id: true,
+        items: {
+          orderBy: {
+            createdAt: "asc",
+          },
+          select: {
+            quantity: true,
+            id: true,
 
-  //           product: {
-  //             include: {
-  //               price: true,
-  //             },
-  //           },
-  //         },
-  //       },
-  //     },
-  //   });
+            product: {
+              include: {
+                price: true,
+              },
+            },
+          },
+        },
+      },
+    });
+    const line_items = [] as Stripe.PaymentLinkCreateParams.LineItem[];
 
-  //   const paymentLink = await ctx.stripe.paymentLinks.create({
-  //     line_items: [{
-  //       price: {
+    cart?.items.map(async (item) => {
+      console.log((item.product.price as any)[group.toLowerCase()]);
+      // const price = await ctx.stripe?.prices.create({
+      //   currency: "CAD",
+      //   product: item.product.id,
 
-  //       },
-  //       quantity: 1,
-  //     }],
-  //   });
-  // }),
+      //   unit_amount: (item.product.price as any)[group.toLowerCase()],
+      // });
+    });
+
+    // const paymentLink = await ctx.stripe.paymentLinks.create({
+    //   line_items: [
+    //     {
+    //       price: {},
+    //       quantity: 1,
+    //     },
+    //   ],
+    // });
+  }),
   getProduct: protectedProcedure
     .input(z.object({ productId: z.string() }))
     .query(async ({ input, ctx }) => {
@@ -231,7 +241,11 @@ export const shopRouter = createTRPCRouter({
       }
     }),
   getCategories: publicProcedure.query(({ ctx }) => {
-    return ctx.prisma.category.findMany();
+    return ctx.prisma.category.findMany({
+      orderBy: {
+        name: "asc",
+      },
+    });
   }),
   changeItemQuantity: protectedProcedure
     .input(z.object({ itemId: z.string(), productQuantity: z.number().min(1) }))
@@ -394,6 +408,13 @@ export const shopRouter = createTRPCRouter({
   addProduct: staffProcedure
     .input(productCreationSchema)
     .mutation(async ({ input, ctx }) => {
+      if (ctx.stripe == null) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Stripe server error.",
+        });
+      }
+
       const category = await ctx.prisma.category.findUnique({
         where: { name: input.category },
       });
@@ -425,6 +446,16 @@ export const shopRouter = createTRPCRouter({
           description: input.description,
           priceId: pricing.id,
         },
+      });
+
+      await ctx.stripe.products.create({
+        id: product.id,
+        name: input.name,
+        description: input.description,
+        images: [input.imageUrl],
+        shippable: true,
+        type: "good",
+        metadata: { category: category.name },
       });
 
       return product;

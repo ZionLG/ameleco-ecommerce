@@ -35,6 +35,7 @@ import { ScrollArea } from "./ui/scroll-area";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
@@ -67,9 +68,6 @@ const CreateProductDialog = () => {
   const { data } = api.shop.getCategories.useQuery();
 
   const supabase = useSupabaseClient();
-  useEffect(() => {
-    console.log(form.watch("imageUrl"));
-  }, [form.watch("imageUrl")]);
 
   useEffect(() => {
     if (!selectedFile) {
@@ -306,26 +304,31 @@ const CreateProductDialog = () => {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Category</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select a category" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {data?.map((category) => (
-                              <SelectItem
-                                key={category.id}
-                                value={category.name}
-                              >
-                                {category.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <FormControl>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select a category" />
+                              </SelectTrigger>
+                            </FormControl>
+
+                            <SelectContent>
+                              <ScrollArea className="h-36 max-h-36 pr-3">
+                                {data?.map((category) => (
+                                  <SelectItem
+                                    key={category.id}
+                                    value={category.name}
+                                  >
+                                    {category.name}
+                                  </SelectItem>
+                                ))}
+                              </ScrollArea>
+                            </SelectContent>
+                          </Select>
+                        </FormControl>
                         <FormDescription>
                           Category of the product
                         </FormDescription>

@@ -27,6 +27,8 @@ const CartPage = () => {
   const { data, isLoading, isSuccess } = api.shop.getCart.useQuery(undefined, {
     enabled: !!session,
   });
+  const { mutate } = api.shop.createPaymentLink.useMutation();
+
   const [total, setTotal] = React.useState(0);
   useEffect(() => {
     if (data) {

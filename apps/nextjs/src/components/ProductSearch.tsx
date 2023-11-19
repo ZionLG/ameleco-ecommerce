@@ -6,9 +6,11 @@ import { Search } from "lucide-react";
 import { api } from "~/utils/api";
 import type { RouterOutputs } from "~/utils/api";
 import { Input } from "./ui/input";
+import { ScrollArea } from "./ui/scroll-area";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
@@ -93,12 +95,18 @@ const ProductSearch = ({ maxResults = 5 }: SearchProps) => {
               <SelectValue placeholder="Select a category" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={"all categories"}>All Categories</SelectItem>
-              {categoryData?.map((category) => (
-                <SelectItem key={category.id} value={category.name}>
-                  {category.name}
-                </SelectItem>
-              ))}
+              <ScrollArea className="h-36 max-h-36 pr-3">
+                <SelectGroup className="max-h-36">
+                  <SelectItem value={"all categories"}>
+                    All Categories
+                  </SelectItem>
+                  {categoryData?.map((category) => (
+                    <SelectItem key={category.id} value={category.name}>
+                      {category.name}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </ScrollArea>
             </SelectContent>
           </Select>
         </div>
