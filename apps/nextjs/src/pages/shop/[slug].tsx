@@ -6,6 +6,7 @@ import type {
 } from "next";
 import Head from "next/head";
 import Image from "next/image";
+import { useRouter } from "next/router";
 import {
   BreadcrumbItem,
   Breadcrumbs,
@@ -39,6 +40,8 @@ const ProductPage = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
   );
   const [quantity, setQuantity] = useState(1);
   const utils = api.useContext();
+  const router = useRouter();
+
   const { mutate, isLoading } = api.shop.addToCart.useMutation({
     onSuccess: () => {
       void utils.shop.getCart.invalidate();
@@ -48,6 +51,13 @@ const ProductPage = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
       toast.error(error.message);
     },
   });
+
+  const { mutate: mutateDelete, isLoading: isLoadingDelete } =
+    api.shop.removeProduct.useMutation({
+      onSuccess: () => {
+        void router.push("/");
+      },
+    });
 
   if (product.data) {
     const productData = product.data;
@@ -66,6 +76,24 @@ const ProductPage = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
           <BreadcrumbItem href="/shop">Shop</BreadcrumbItem>
           <BreadcrumbItem>{name}</BreadcrumbItem>
         </Breadcrumbs>
+        {session.session?.user.app_metadata.AMELECO_is_staff && (
+          <>
+            <Separator />
+            <div className="flex items-center justify-center gap-10">
+              <Button size={"lg"}>Edit Product</Button>
+              <Button
+                variant={"destructive"}
+                size={"lg"}
+                onClick={() => {
+                  mutateDelete({ productId: productData.id });
+                }}
+              >
+                Delete Product
+              </Button>
+            </div>
+            <Separator />
+          </>
+        )}
         <div className="invisible hidden justify-center gap-10 md:visible md:flex">
           <div className="grid max-w-2xl grid-rows-2 gap-10">
             <div className=" rounded-sm bg-background p-10 shadow-md">

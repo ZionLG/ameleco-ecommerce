@@ -14,7 +14,7 @@ model Profile {
   id     String  @id @default(dbgenerated("(uuid_generate_v4())")) @db.Uuid
   firstName   String @map("first_name")
   lastName   String @map("last_name")
-  avatarUrl  String? @map("avatar_url")
+  userGroup  Groups @map("user_group") @default(VISITOR)
   email  String
   phone String @unique
   occupation Occupation
@@ -134,11 +134,7 @@ enum Occupation {
   @@schema("prisma")
   @@map("occupation")
 }
-model GroupTemp {
-  group Groups @id
-  @@map("group_temp")
-  @@schema("prisma")
-}
+
 enum Groups {
   VISITOR
   CUSTOMER

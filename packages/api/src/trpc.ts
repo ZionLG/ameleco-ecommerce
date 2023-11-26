@@ -55,7 +55,9 @@ export const createInnerTRPCContext = (opts: CreateContextOptions) => {
  * @link https://trpc.io/docs/context
  */
 export const createTRPCContext = async (opts: CreateNextContextOptions) => {
-  const supabase = createPagesServerClient(opts);
+  const supabase = createPagesServerClient(opts, {
+    supabaseKey: process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  });
 
   // React Native will pass their token through headers,
   // browsers will have the session cookie set

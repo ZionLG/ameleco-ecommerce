@@ -31,7 +31,7 @@ const HeaderAuth = () => {
             <Link href={"/account"}>Profile</Link>
           </DropdownMenuItem>
           {user.app_metadata.AMELECO_is_staff ? (
-            <DropdownMenuItem>Products Dashboard</DropdownMenuItem>
+            <DropdownMenuItem>Users Dashboard</DropdownMenuItem>
           ) : null}
 
           <DropdownMenuItem>Billing</DropdownMenuItem>
