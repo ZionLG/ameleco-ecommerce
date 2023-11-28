@@ -24,10 +24,16 @@ import {
 const CartPage = () => {
   const session = useSessionContext();
   const router = useRouter();
-  const { data, isLoading, isSuccess } = api.shop.getCart.useQuery(undefined, {
+  const { data } = api.shop.getCart.useQuery(undefined, {
     enabled: !!session,
   });
-  const { mutate } = api.shop.createPaymentLink.useMutation();
+  const { mutate, isLoading } = api.shop.createPaymentLink.useMutation({
+    onSuccess: async (data) => {
+      if (data) {
+        void window.open(data);
+      }
+    },
+  });
 
   const [total, setTotal] = React.useState(0);
   useEffect(() => {
@@ -99,7 +105,15 @@ const CartPage = () => {
           <span className="mt-8 text-sm">
             Taxes and shipping calculated at checkout
           </span>
-          <Button className="mt-5 w-full rounded-sm py-8">Checkout</Button>
+          <Button
+            disabled={isLoading}
+            onClick={() => {
+              mutate();
+            }}
+            className="mt-5 w-full rounded-sm py-8"
+          >
+            Checkout
+          </Button>
         </div>
       </div>
     </main>

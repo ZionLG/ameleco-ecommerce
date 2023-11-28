@@ -113,10 +113,9 @@ const CreateProductDialog = () => {
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit)}
-              className="flex flex-col gap-5"
+              className="flex flex-col gap-5 p-3 "
             >
               <div className="flex flex-col gap-5 space-y-8 pr-5 xl:flex-row">
-                {" "}
                 <FormField
                   control={form.control}
                   name="imageUrl"
@@ -265,7 +264,7 @@ const CreateProductDialog = () => {
                   }}
                 />
                 <Separator orientation="vertical" className="h-auto" />
-                <div className="flex min-w-[200px] flex-row gap-5 xl:flex-col xl:justify-center">
+                <div className="flex min-w-[200px] flex-col gap-5 lg:flex-row xl:flex-col xl:justify-center">
                   <FormField
                     control={form.control}
                     name="name"

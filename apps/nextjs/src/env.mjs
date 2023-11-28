@@ -7,9 +7,10 @@ export const env = createEnv({
    * built with invalid env vars.
    */
   server: {
-    DATABASE_URL: z.string().url(),
     STRIPE_SECRET_KEY: z.string().min(1),
     STRIPE_PUBLISHABLE_KEY: z.string().min(1),
+    SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
+    SUPABASE_URL: z.string().min(1),
   },
   /**
    * Specify your client-side environment variables schema here.
@@ -23,11 +24,12 @@ export const env = createEnv({
    * Destructure all variables from `process.env` to make sure they aren't tree-shaken away.
    */
   runtimeEnv: {
-    DATABASE_URL: process.env.DATABASE_URL,
+    SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
     NEXT_PUBLIC_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     STRIPE_PUBLISHABLE_KEY: process.env.STRIPE_PUBLISHABLE_KEY,
     STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
+    SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
   },
   skipValidation: !!process.env.CI || !!process.env.SKIP_ENV_VALIDATION,
 });
