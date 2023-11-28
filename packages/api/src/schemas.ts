@@ -15,3 +15,25 @@ export const productCreationSchema = z.object({
     vip: z.coerce.number().min(0),
   }),
 });
+
+export const filtersStateSchema = z.array(
+  z.object({
+    id: z.enum([
+      "group",
+      "occupation",
+      "purchaseFrequency",
+      "businessType",
+      "email",
+      "fullName",
+      "phone",
+      "userGroup",
+    ]),
+    value: z.string().or(z.array(z.string())),
+  }),
+);
+export const sortStateSchema = z.array(
+  z.object({
+    id: z.enum(["fullName", "email", "createdAt"]),
+    desc: z.boolean(),
+  }),
+);

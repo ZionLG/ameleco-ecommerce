@@ -18,22 +18,19 @@ export const shopRouter = createTRPCRouter({
     });
   }),
   createPaymentLink: protectedProcedure.mutation(async ({ ctx }) => {
-    if (ctx.stripe == null) {
-      return null;
+    if (ctx.stripe === null) {
+      return;
     }
     let group = "VISITOR" as Groups;
 
-    if (ctx.user && ctx.supabase) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const { data, error } = await ctx.supabase.rpc("get_my_claim", {
-        claim: "AMELECO_group",
-      });
-      if (error) {
-        return;
-      }
-
-      group = data as Groups;
+    if (ctx.user) {
+      group = ctx.user.app_metadata.AMELECO_group as Groups;
+    } else {
+      group = "VISITOR" as Groups;
     }
+
+    // TODO - check quantity
+
     const cart = await ctx.prisma.cart.findUnique({
       where: { userId: ctx.user.id },
       select: {
@@ -57,43 +54,37 @@ export const shopRouter = createTRPCRouter({
     });
     const line_items = [] as Stripe.PaymentLinkCreateParams.LineItem[];
 
-    cart?.items.map(async (item) => {
-      console.log((item.product.price as any)[group.toLowerCase()]);
-      // const price = await ctx.stripe?.prices.create({
-      //   currency: "CAD",
-      //   product: item.product.id,
+    const promises = (cart?.items ?? []).map(async (item) => {
+      const price = await ctx.stripe!.prices.create({
+        currency: "CAD",
+        product: item.product.id,
+        unit_amount:
+          item.product.price[group.toLowerCase() as Lowercase<Groups>] * 100,
+      });
+      return { price: price.id, quantity: item.quantity };
+    });
+    const resolvedPrices = await Promise.all(promises);
 
-      //   unit_amount: (item.product.price as any)[group.toLowerCase()],
-      // });
+    line_items.push(...resolvedPrices);
+
+    const paymentLink = await ctx.stripe.paymentLinks.create({
+      line_items: line_items,
     });
 
-    // const paymentLink = await ctx.stripe.paymentLinks.create({
-    //   line_items: [
-    //     {
-    //       price: {},
-    //       quantity: 1,
-    //     },
-    //   ],
-    // });
+    console.log("URL", paymentLink.url);
+    return paymentLink.url;
   }),
   getProduct: protectedProcedure
     .input(z.object({ productId: z.string() }))
     .query(async ({ input, ctx }) => {
       let group;
 
-      if (ctx.user && ctx.supabase) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        const { data, error } = await ctx.supabase.rpc("get_my_claim", {
-          claim: "AMELECO_group",
-        });
-        if (error) {
-          return;
-        }
-
-        group = data as Groups;
+      if (ctx.user) {
+        group = ctx.user.app_metadata.AMELECO_group as Groups;
       } else {
         group = "VISITOR" as Groups;
       }
+
       const cartItem = await ctx.prisma.product.findUnique({
         where: { id: input.productId },
         include: {
@@ -125,19 +116,12 @@ export const shopRouter = createTRPCRouter({
   getCart: protectedProcedure.query(async ({ ctx }) => {
     let group;
 
-    if (ctx.user && ctx.supabase) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const { data, error } = await ctx.supabase.rpc("get_my_claim", {
-        claim: "AMELECO_group",
-      });
-      if (error) {
-        return;
-      }
-
-      group = data as Groups;
+    if (ctx.user) {
+      group = ctx.user.app_metadata.AMELECO_group as Groups;
     } else {
       group = "VISITOR" as Groups;
     }
+
     return await ctx.prisma.cart.findUnique({
       where: { userId: ctx.user.id },
       select: {
@@ -299,21 +283,31 @@ export const shopRouter = createTRPCRouter({
 
       return item;
     }),
+  removeProduct: staffProcedure
+    .input(z.object({ productId: z.string() }))
+    .mutation(async ({ input: { productId }, ctx }) => {
+      const item = await ctx.prisma.product.delete({
+        where: { id: productId },
+      });
+
+      if (item == null) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Product not found.",
+        });
+      } else {
+        await ctx.stripe?.products.del(productId);
+      }
+
+      return item;
+    }),
   productById: publicProcedure
     .input(z.object({ productId: z.string() }))
     .query(async ({ ctx, input }) => {
       let group;
 
-      if (ctx.user && ctx.supabase) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        const { data, error } = await ctx.supabase.rpc("get_my_claim", {
-          claim: "AMELECO_group",
-        });
-        if (error) {
-          return;
-        }
-
-        group = data as Groups;
+      if (ctx.user) {
+        group = ctx.user.app_metadata.AMELECO_group as Groups;
       } else {
         group = "VISITOR" as Groups;
       }
@@ -342,16 +336,8 @@ export const shopRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       let group;
 
-      if (ctx.user && ctx.supabase) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        const { data, error } = await ctx.supabase.rpc("get_my_claim", {
-          claim: "AMELECO_group",
-        });
-        if (error) {
-          return;
-        }
-
-        group = data as Groups;
+      if (ctx.user) {
+        group = ctx.user.app_metadata.AMELECO_group as Groups;
       } else {
         group = "VISITOR" as Groups;
       }
@@ -376,16 +362,8 @@ export const shopRouter = createTRPCRouter({
   allProducts: publicProcedure.query(async ({ ctx }) => {
     let group;
 
-    if (ctx.user && ctx.supabase) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const { data, error } = await ctx.supabase.rpc("get_my_claim", {
-        claim: "AMELECO_group",
-      });
-      if (error) {
-        return;
-      }
-
-      group = data as Groups;
+    if (ctx.user) {
+      group = ctx.user.app_metadata.AMELECO_group as Groups;
     } else {
       group = "VISITOR" as Groups;
     }
@@ -451,7 +429,6 @@ export const shopRouter = createTRPCRouter({
       await ctx.stripe.products.create({
         id: product.id,
         name: input.name,
-        description: input.description,
         images: [input.imageUrl],
         shippable: true,
         type: "good",
