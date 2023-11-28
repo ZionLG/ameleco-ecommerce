@@ -3,7 +3,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 
 import { Badge } from "../ui/badge";
 import { Checkbox } from "../ui/checkbox";
-import { DataTableColumnHeader } from "./data-table-column-header";
+import { DataTableColumnHeader } from "../ui/generic-table/data-table-column-header";
 import { DataTableRowActions } from "./data-table-row-actions";
 //import { labels priorities, statuses } from "./data/data";
 import type { userSchema } from "./data/schema";
@@ -197,8 +197,8 @@ export const columns: ColumnDef<userSchema>[] = [
   //     return value.includes(row.getValue(id));
   //   },
   // },
-  // {
-  //   id: "actions",
-  //   cell: ({ row }) => <DataTableRowActions row={row} />,
-  // },
+  {
+    id: "actions",
+    cell: ({ row }) => <DataTableRowActions row={row} />,
+  },
 ];

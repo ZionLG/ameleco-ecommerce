@@ -1,8 +1,9 @@
-"use client";
-
 import type { Row } from "@tanstack/react-table";
 import { MoreHorizontal } from "lucide-react";
 
+import type { Groups } from "@ameleco/db";
+
+import { api } from "~/utils/api";
 import { Button } from "../ui/button";
 import {
   DropdownMenu,
@@ -17,14 +18,20 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
+import { GroupsData } from "./data/data";
+import type { userSchema } from "./data/schema";
 
-interface DataTableRowActionsProps<TData> {
-  row: Row<TData>;
+interface DataTableRowActionsProps {
+  row: Row<userSchema>;
 }
 
-export function DataTableRowActions<TData>({
-  row,
-}: DataTableRowActionsProps<TData>) {
+export function DataTableRowActions({ row }: DataTableRowActionsProps) {
+  const utils = api.useContext();
+  const { mutate, isLoading } = api.auth.updateUserGroup.useMutation({
+    onSuccess: () => {
+      void utils.auth.getUsers.invalidate();
+    },
+  });
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -37,13 +44,33 @@ export function DataTableRowActions<TData>({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[160px]">
-        <DropdownMenuItem>Edit</DropdownMenuItem>
-        <DropdownMenuItem>Make a copy</DropdownMenuItem>
-        <DropdownMenuItem>Favorite</DropdownMenuItem>
+        <DropdownMenuSub>
+          <DropdownMenuSubTrigger>Group</DropdownMenuSubTrigger>
+          <DropdownMenuSubContent>
+            <DropdownMenuRadioGroup value={row.getValue("userGroup")}>
+              {GroupsData.map((group) => (
+                <DropdownMenuRadioItem
+                  key={group.value}
+                  value={group.value}
+                  onClick={() => {
+                    if (!isLoading) {
+                      mutate({
+                        newGroup: group.value as Groups,
+                        userId: row.original.userId,
+                      });
+                    }
+                  }}
+                >
+                  {group.label}
+                </DropdownMenuRadioItem>
+              ))}
+            </DropdownMenuRadioGroup>
+          </DropdownMenuSubContent>
+        </DropdownMenuSub>
         <DropdownMenuSeparator />
 
         <DropdownMenuItem>
-          Delete
+          Delete User
           <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
         </DropdownMenuItem>
       </DropdownMenuContent>

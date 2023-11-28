@@ -8,6 +8,7 @@
  */
 import { createPagesServerClient } from "@supabase/auth-helpers-nextjs";
 import type { SupabaseClient, User } from "@supabase/auth-helpers-nextjs";
+import { createClient } from "@supabase/supabase-js";
 import { initTRPC, TRPCError } from "@trpc/server";
 import type { CreateNextContextOptions } from "@trpc/server/adapters/next";
 import Stripe from "stripe";
@@ -55,10 +56,16 @@ export const createInnerTRPCContext = (opts: CreateContextOptions) => {
  * @link https://trpc.io/docs/context
  */
 export const createTRPCContext = async (opts: CreateNextContextOptions) => {
-  const supabase = createPagesServerClient(opts, {
-    supabaseKey: process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  });
-
+  const supabase = createPagesServerClient(opts);
+  const serverClient = createClient(
+    "https://uiduwuwbecwtnkohclvi.supabase.co",
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    {
+      auth: {
+        persistSession: false,
+      },
+    },
+  );
   // React Native will pass their token through headers,
   // browsers will have the session cookie set
   const token = opts.req.headers.authorization;
@@ -73,7 +80,7 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
 
   return createInnerTRPCContext({
     user: user.data.user,
-    supabase: supabase,
+    supabase: serverClient,
     stripe: stripe,
   });
 };

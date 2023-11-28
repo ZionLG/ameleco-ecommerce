@@ -1,7 +1,11 @@
 import { z } from "zod";
 
-import type { Groups } from "@ameleco/db";
-import { BusinessType, Occupation, PurchaseFrequency } from "@ameleco/db";
+import {
+  BusinessType,
+  Groups,
+  Occupation,
+  PurchaseFrequency,
+} from "@ameleco/db";
 
 import { filtersStateSchema, sortStateSchema } from "../schemas";
 import {
@@ -42,6 +46,29 @@ export const authRouter = createTRPCRouter({
           companyName: input.companyName,
         },
       });
+    }),
+  updateUserGroup: staffProcedure
+    .input(
+      z.object({
+        newGroup: z.nativeEnum(Groups),
+        userId: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      if (ctx.supabase) {
+        const response = await ctx.supabase.rpc("set_claim", {
+          claim: "AMELECO_group",
+          uid: input.userId,
+          value: input.newGroup,
+        });
+        console.log(input.newGroup);
+        return await ctx.prisma.profile.update({
+          where: { userId: ctx.user.id },
+          data: {
+            userGroup: input.newGroup,
+          },
+        });
+      }
     }),
   getSecretMessage: protectedProcedure.query(() => {
     // testing type validation of overridden next-auth Session in @ameleco/auth package

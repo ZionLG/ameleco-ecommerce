@@ -7,14 +7,14 @@ import {
 } from "lucide-react";
 
 import { cn } from "~/utils/utils";
-import { Button } from "../ui/button";
+import { Button } from "../button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
+} from "../dropdown-menu";
 
 interface DataTableColumnHeaderProps<TData, TValue>
   extends React.HTMLAttributes<HTMLDivElement> {

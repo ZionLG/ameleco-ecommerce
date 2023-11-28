@@ -6,14 +6,14 @@ import {
   ChevronsRight,
 } from "lucide-react";
 
-import { Button } from "../ui/button";
+import { Button } from "../button";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../ui/select";
+} from "../select";
 
 interface DataTablePaginationProps<TData> {
   table: Table<TData>;
@@ -23,7 +23,7 @@ export function DataTablePagination<TData>({
   table,
 }: DataTablePaginationProps<TData>) {
   return (
-    <div className="flex items-center justify-between px-2">
+    <div className="flex flex-col gap-5 px-2 lg:flex-row lg:items-center lg:justify-between">
       <div className="flex-1 text-sm text-muted-foreground">
         {table.getFilteredSelectedRowModel().rows.length} of{" "}
         {table.getFilteredRowModel().rows.length} row(s) selected.
