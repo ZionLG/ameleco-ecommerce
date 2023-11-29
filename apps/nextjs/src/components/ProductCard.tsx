@@ -1,7 +1,9 @@
 import React from "react";
 import NextImage from "next/image";
 import Link from "next/link";
-import { Card, CardBody, CardFooter, Image, Spinner } from "@nextui-org/react";
+import { Card, CardBody, CardFooter } from "@nextui-org/card";
+import { Image } from "@nextui-org/image";
+import { Spinner } from "@nextui-org/spinner";
 import { useSessionContext } from "@supabase/auth-helpers-react";
 import { Dot } from "lucide-react";
 

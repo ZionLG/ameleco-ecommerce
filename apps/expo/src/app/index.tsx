@@ -23,7 +23,7 @@ function PostCard(props: { post: RouterOutputs["post"]["all"][number] }) {
   const { post } = props;
 
   const router = useRouter();
-  const utils = api.useContext();
+  const utils = api.useUtils();
 
   const { mutate: deletePost } = api.post.delete.useMutation({
     onSettled: () => utils.post.all.invalidate(),
@@ -61,7 +61,7 @@ function PostCard(props: { post: RouterOutputs["post"]["all"][number] }) {
 }
 
 function CreatePost() {
-  const utils = api.useContext();
+  const utils = api.useUtils();
 
   const [title, setTitle] = React.useState("");
   const [content, setContent] = React.useState("");
@@ -128,7 +128,7 @@ function CreatePost() {
 }
 
 export default function HomeScreen() {
-  const utils = api.useContext();
+  const utils = api.useUtils();
 
   const { data: posts } = api.post.all.useQuery();
 

@@ -1,11 +1,6 @@
 import React from "react";
-import {
-  Input,
-  Select,
-  SelectItem,
-  SelectSection,
-  Textarea,
-} from "@nextui-org/react";
+import { Input, Textarea } from "@nextui-org/input";
+import { Select, SelectItem, SelectSection } from "@nextui-org/select";
 import type {
   BusinessType,
   Occupation,
@@ -40,7 +35,7 @@ const ProfileForm = (profile: ProfileEdit) => {
     mode: "onTouched",
   });
   const supabase = useSupabaseClient();
-  const utils = api.useContext();
+  const utils = api.useUtils();
   const { mutate, isLoading } = api.auth.updateProfile.useMutation({
     onSuccess: () => {
       void utils.auth.me.invalidate();

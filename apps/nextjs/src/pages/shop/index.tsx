@@ -3,7 +3,7 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { BreadcrumbItem, Breadcrumbs } from "@nextui-org/react";
+import { BreadcrumbItem, Breadcrumbs } from "@nextui-org/breadcrumbs";
 import { useUser } from "@supabase/auth-helpers-react";
 import { createServerSideHelpers } from "@trpc/react-query/server";
 import { ChevronDown } from "lucide-react";
@@ -61,7 +61,7 @@ const Shop = () => {
             residential.
           </p>
         </div>
-        <Image src={"/shop.svg"} alt="Shop" width={500} height={500} />
+        <Image src={"/shop.svg"} alt="Shop" priority width={500} height={500} />
       </div>
       <Breadcrumbs>
         <BreadcrumbItem href="/">Home</BreadcrumbItem>

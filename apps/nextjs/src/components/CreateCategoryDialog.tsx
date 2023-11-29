@@ -36,7 +36,7 @@ const CreateCategoryDialog = () => {
       name: "",
     },
   });
-  const utils = api.useContext();
+  const utils = api.useUtils();
   const { mutate, isLoading } = api.shop.addCategory.useMutation({
     onSuccess: () => {
       void utils.shop.getCategories.invalidate();

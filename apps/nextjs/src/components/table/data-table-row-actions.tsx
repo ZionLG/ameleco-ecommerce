@@ -26,7 +26,7 @@ interface DataTableRowActionsProps {
 }
 
 export function DataTableRowActions({ row }: DataTableRowActionsProps) {
-  const utils = api.useContext();
+  const utils = api.useUtils();
   const { mutate, isLoading } = api.auth.updateUserGroup.useMutation({
     onSuccess: () => {
       void utils.auth.getUsers.invalidate();

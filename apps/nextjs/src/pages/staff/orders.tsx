@@ -1,4 +1,3 @@
-import type { ReactElement } from "react";
 import React from "react";
 import type {
   ColumnFiltersState,
@@ -14,7 +13,6 @@ import type {
 
 import { api } from "~/utils/api";
 import DashboardLayout from "~/components/DashboardLayout";
-import type { NextPageWithLayout } from "../_app";
 import { columns } from "../../components/table/columns";
 import { DataTable } from "../../components/ui/generic-table/data-table";
 
@@ -29,7 +27,7 @@ const sidebarNavItems = [
   },
 ];
 
-const Orders: NextPageWithLayout = () => {
+const Orders = () => {
   const [{ pageIndex, pageSize }, setPagination] =
     React.useState<PaginationState>({
       pageIndex: 0,
@@ -83,10 +81,6 @@ const Orders: NextPageWithLayout = () => {
       />
     </DashboardLayout>
   );
-};
-
-Orders.getLayout = function getLayout(page: ReactElement) {
-  return;
 };
 
 export default Orders;

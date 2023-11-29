@@ -1,7 +1,7 @@
 import React from "react";
 import type { StaticImport } from "next/dist/shared/lib/get-img-props";
 import Image from "next/image";
-import { Card } from "@nextui-org/react";
+import { Card } from "@nextui-org/card";
 
 export interface HomeCategoryProps {
   image: string | StaticImport;

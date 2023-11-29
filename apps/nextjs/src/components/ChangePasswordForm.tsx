@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Input } from "@nextui-org/react";
+import { Input } from "@nextui-org/input";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 import type { SubmitHandler } from "react-hook-form";

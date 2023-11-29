@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Image from "next/image";
-import { Spinner } from "@nextui-org/react";
+import { Spinner } from "@nextui-org/spinner";
 import { useSessionContext } from "@supabase/auth-helpers-react";
 
 import type { RouterOutputs } from "~/utils/api";
@@ -23,7 +23,7 @@ const CartTableRow = ({
   const session = useSessionContext();
 
   const [quantity, setQuantity] = useState(startingQuantity);
-  const utils = api.useContext();
+  const utils = api.useUtils();
   const { mutate: removeItem } = api.shop.removeFromCart.useMutation({
     onSuccess: () => {
       void utils.shop.getCart.invalidate();

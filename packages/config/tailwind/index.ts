@@ -1,4 +1,4 @@
-import { nextui } from "@nextui-org/react";
+import { nextui } from "@nextui-org/theme";
 import type { Config } from "tailwindcss";
 import defaultTheme from "tailwindcss/defaultTheme";
 
@@ -9,7 +9,7 @@ export default {
     "./components/**/*.{ts,tsx}",
     "./app/**/*.{ts,tsx}",
     "./src/**/*.{ts,tsx}",
-    "../../node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}",
+    "../../node_modules/@nextui-org/theme/dist/components/(button|breadcrumbs|card|input|image|popover|select|skeleton|spinner).{js,ts,jsx,tsx}",
   ],
   theme: {
     screens: {
