@@ -28,7 +28,7 @@ const CartPage = () => {
     enabled: !!session,
   });
   const { mutate, isLoading } = api.shop.createPaymentLink.useMutation({
-    onSuccess: async (data) => {
+    onSuccess: (data) => {
       if (data) {
         void window.open(data);
       }

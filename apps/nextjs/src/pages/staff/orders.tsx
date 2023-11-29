@@ -29,7 +29,7 @@ const sidebarNavItems = [
   },
 ];
 
-const Users: NextPageWithLayout = () => {
+const Orders: NextPageWithLayout = () => {
   const [{ pageIndex, pageSize }, setPagination] =
     React.useState<PaginationState>({
       pageIndex: 0,
@@ -84,8 +84,8 @@ const Users: NextPageWithLayout = () => {
   );
 };
 
-Users.getLayout = function getLayout(page: ReactElement) {
+Orders.getLayout = function getLayout(page: ReactElement) {
   return <DashboardLayout items={sidebarNavItems}>{page}</DashboardLayout>;
 };
 
-export default Users;
+export default Orders;
