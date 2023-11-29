@@ -23,7 +23,7 @@ const CartTableRow = ({
   const session = useSessionContext();
 
   const [quantity, setQuantity] = useState(startingQuantity);
-  const utils = api.useContext();
+  const utils = api.useUtils();
   const { mutate: removeItem } = api.shop.removeFromCart.useMutation({
     onSuccess: () => {
       void utils.shop.getCart.invalidate();

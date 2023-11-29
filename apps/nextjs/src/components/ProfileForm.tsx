@@ -35,7 +35,7 @@ const ProfileForm = (profile: ProfileEdit) => {
     mode: "onTouched",
   });
   const supabase = useSupabaseClient();
-  const utils = api.useContext();
+  const utils = api.useUtils();
   const { mutate, isLoading } = api.auth.updateProfile.useMutation({
     onSuccess: () => {
       void utils.auth.me.invalidate();

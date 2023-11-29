@@ -21,7 +21,7 @@ const Quantity = ({
   itemId,
   startQuantity,
 }: QuantityProps) => {
-  const utils = api.useContext();
+  const utils = api.useUtils();
   const { mutate, isLoading } = api.shop.changeItemQuantity.useMutation({
     onSuccess: () => {
       void utils.shop.getCart.invalidate();

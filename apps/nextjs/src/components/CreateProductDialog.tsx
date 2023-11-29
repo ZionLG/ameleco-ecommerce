@@ -80,7 +80,7 @@ const CreateProductDialog = () => {
     // free memory when ever this component is unmounted
     return () => URL.revokeObjectURL(objectUrl);
   }, [selectedFile]);
-  const utils = api.useContext();
+  const utils = api.useUtils();
 
   const { mutate, isLoading } = api.shop.addProduct.useMutation({
     onSuccess: () => {

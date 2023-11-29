@@ -36,7 +36,7 @@ const ProductPage = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
     { enabled: !!name },
   );
   const [quantity, setQuantity] = useState(1);
-  const utils = api.useContext();
+  const utils = api.useUtils();
   const router = useRouter();
 
   const { mutate, isLoading } = api.shop.addToCart.useMutation({
