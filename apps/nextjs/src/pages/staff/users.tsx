@@ -1,4 +1,3 @@
-import type { ReactElement } from "react";
 import React from "react";
 import type {
   ColumnFiltersState,
@@ -14,7 +13,6 @@ import type {
 
 import { api } from "~/utils/api";
 import DashboardLayout from "~/components/DashboardLayout";
-import type { NextPageWithLayout } from "../_app";
 import { columns } from "../../components/table/columns";
 import { DataTable } from "../../components/ui/generic-table/data-table";
 
@@ -29,7 +27,7 @@ const sidebarNavItems = [
   },
 ];
 
-const Users: NextPageWithLayout = () => {
+const Users = () => {
   const [{ pageIndex, pageSize }, setPagination] =
     React.useState<PaginationState>({
       pageIndex: 0,
@@ -60,7 +58,7 @@ const Users: NextPageWithLayout = () => {
   );
 
   return (
-    <div className="">
+    <DashboardLayout items={sidebarNavItems}>
       <DataTable
         data={{
           isLoading: isFetching,
@@ -80,12 +78,8 @@ const Users: NextPageWithLayout = () => {
         }}
         columns={columns}
       />
-    </div>
+    </DashboardLayout>
   );
-};
-
-Users.getLayout = function getLayout(page: ReactElement) {
-  return <DashboardLayout items={sidebarNavItems}>{page}</DashboardLayout>;
 };
 
 export default Users;

@@ -1,13 +1,10 @@
-import type { ReactElement } from "react";
 import React, { useEffect, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/router";
-import { cn, Spinner } from "@nextui-org/react";
+import { Spinner } from "@nextui-org/react";
 import {
   useSessionContext,
   useSupabaseClient,
 } from "@supabase/auth-helpers-react";
-import { ChevronDown, Dot } from "lucide-react";
 
 import { api } from "~/utils/api";
 import ChangeEmailForm from "~/components/ChangeEmailForm";
@@ -15,7 +12,6 @@ import ChangePasswordForm from "~/components/ChangePasswordForm";
 import DashboardLayout from "~/components/DashboardLayout";
 import ProfileForm from "~/components/ProfileForm";
 import { Separator } from "~/components/ui/separator";
-import type { NextPageWithLayout } from "../_app";
 
 const sidebarNavItems = [
   {
@@ -28,7 +24,7 @@ const sidebarNavItems = [
   },
 ];
 
-const Profile: NextPageWithLayout = () => {
+const Profile = () => {
   const session = useSessionContext();
   const router = useRouter();
   const supabase = useSupabaseClient();
@@ -38,7 +34,7 @@ const Profile: NextPageWithLayout = () => {
     if (!session.isLoading && session.session == null) void router.push("/");
   }, [router, session]);
   return (
-    <>
+    <DashboardLayout items={sidebarNavItems}>
       <span className="text-2xl font-bold">My Profile</span>
       <Separator className="my-2" />
       {data && isSuccess && session.session ? (
@@ -69,12 +65,8 @@ const Profile: NextPageWithLayout = () => {
       ) : (
         <Spinner />
       )}
-    </>
+    </DashboardLayout>
   );
-};
-
-Profile.getLayout = function getLayout(page: ReactElement) {
-  return <DashboardLayout items={sidebarNavItems}>{page}</DashboardLayout>;
 };
 
 export default Profile;

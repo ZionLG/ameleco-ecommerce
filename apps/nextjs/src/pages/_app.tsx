@@ -5,8 +5,6 @@ import { ThemeProvider } from "next-themes";
 import "../styles/globals.css";
 
 import { useState } from "react";
-import type { ReactElement, ReactNode } from "react";
-import type { NextPage } from "next";
 import type { AppProps } from "next/app";
 import { Encode_Sans_Expanded } from "next/font/google";
 import { useRouter } from "next/router";
@@ -17,12 +15,6 @@ import { api } from "~/utils/api";
 import Layout from "~/components/layout";
 import { env } from "~/env.mjs";
 
-export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
-  getLayout?: (page: ReactElement) => ReactNode;
-};
-type AppPropsWithLayout<T> = AppProps<T> & {
-  Component: NextPageWithLayout<T>;
-};
 const encode_Sans_Expanded = Encode_Sans_Expanded({
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
   subsets: ["latin"],
@@ -31,7 +23,7 @@ const encode_Sans_Expanded = Encode_Sans_Expanded({
 function MyApp({
   Component,
   pageProps,
-}: AppPropsWithLayout<{ initialSession: Session | null }>) {
+}: AppProps<{ initialSession: Session | null }>) {
   const [supabaseClient] = useState(() =>
     createPagesBrowserClient({
       supabaseKey: env.NEXT_PUBLIC_ANON_KEY,
@@ -39,7 +31,6 @@ function MyApp({
     }),
   );
   const router = useRouter();
-  const getLayout = Component.getLayout ?? ((page) => page);
 
   return (
     <SessionContextProvider
@@ -55,7 +46,7 @@ function MyApp({
                 font-family: ${encode_Sans_Expanded.style.fontFamily};
               }
             `}</style>
-            {getLayout(<Component {...pageProps} />)}
+            <Component {...pageProps} />
           </Layout>
         </NextUIProvider>
       </ThemeProvider>

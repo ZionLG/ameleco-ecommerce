@@ -60,7 +60,8 @@ const Orders: NextPageWithLayout = () => {
   );
 
   return (
-    <div className="">
+    <DashboardLayout items={sidebarNavItems}>
+      {" "}
       <DataTable
         data={{
           isLoading: isFetching,
@@ -80,12 +81,12 @@ const Orders: NextPageWithLayout = () => {
         }}
         columns={columns}
       />
-    </div>
+    </DashboardLayout>
   );
 };
 
 Orders.getLayout = function getLayout(page: ReactElement) {
-  return <DashboardLayout items={sidebarNavItems}>{page}</DashboardLayout>;
+  return;
 };
 
 export default Orders;
