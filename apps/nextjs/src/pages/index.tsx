@@ -11,6 +11,7 @@ import { Separator } from "~/components/ui/separator";
 import Accessories from "../../public/Accessories.png";
 import Box from "../../public/Box.png";
 import Breaker from "../../public/Breaker.png";
+import HomeBackground from "../../public/electrician.jpg";
 import HeatingCooling from "../../public/heating and cooling.png";
 import Lighting from "../../public/Lighting.png";
 import Wires from "../../public/Wires.png";
@@ -60,23 +61,32 @@ export default function HomePage() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className=" flex  flex-col">
-        <section className="flex h-[650px] w-full flex-col  justify-center gap-4 bg-[url('/electrician.jpg')] bg-cover bg-center bg-no-repeat px-5 lg:px-28">
-          <div className="flex flex-col gap-10 text-center lg:gap-0 lg:text-start ">
-            <span className="text-6xl text-secondary-foreground">
-              Ameleco Electrical Supply
-            </span>
-            <span className="text-4xl text-secondary-foreground">
-              Reliable & Professional
-            </span>
+        <section className="relative flex h-[650px] w-full  flex-col justify-center  px-5 lg:px-28">
+          <Image
+            src={HomeBackground}
+            fill={true}
+            priority
+            alt={"Background Image"}
+          />
+
+          <div className="absolute flex flex-col gap-4">
+            <div className="flex flex-col gap-10 text-center lg:gap-0 lg:text-start ">
+              <span className="text-6xl text-secondary-foreground">
+                Ameleco Electrical Supply
+              </span>
+              <span className="text-4xl text-secondary-foreground">
+                Reliable & Professional
+              </span>
+            </div>
+            <Link
+              href={"shop"}
+              className={`${cn(
+                buttonVariants({ size: "lg" }),
+              )} self-center lg:self-start`}
+            >
+              Shop Now
+            </Link>
           </div>
-          <Link
-            href={"shop"}
-            className={`${cn(
-              buttonVariants({ size: "lg" }),
-            )} self-center lg:self-start`}
-          >
-            Shop Now
-          </Link>
         </section>
         <section className="flex flex-col items-center gap-10 bg-secondary py-10">
           <span className="px-3 text-center text-5xl font-semibold text-primary md:text-7xl">

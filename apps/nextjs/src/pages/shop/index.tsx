@@ -61,7 +61,7 @@ const Shop = () => {
             residential.
           </p>
         </div>
-        <Image src={"/shop.svg"} alt="Shop" width={500} height={500} />
+        <Image src={"/shop.svg"} alt="Shop" priority width={500} height={500} />
       </div>
       <Breadcrumbs>
         <BreadcrumbItem href="/">Home</BreadcrumbItem>
