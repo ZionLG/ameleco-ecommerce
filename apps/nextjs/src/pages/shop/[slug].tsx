@@ -7,12 +7,9 @@ import type {
 import Head from "next/head";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import {
-  BreadcrumbItem,
-  Breadcrumbs,
-  Skeleton,
-  Spinner,
-} from "@nextui-org/react";
+import { BreadcrumbItem, Breadcrumbs } from "@nextui-org/breadcrumbs";
+import { Skeleton } from "@nextui-org/skeleton";
+import { Spinner } from "@nextui-org/spinner";
 import { useSessionContext } from "@supabase/auth-helpers-react";
 import { createServerSideHelpers } from "@trpc/react-query/server";
 import { Dot } from "lucide-react";

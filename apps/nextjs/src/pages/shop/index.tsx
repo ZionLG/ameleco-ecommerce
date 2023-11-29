@@ -3,7 +3,7 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { BreadcrumbItem, Breadcrumbs } from "@nextui-org/react";
+import { BreadcrumbItem, Breadcrumbs } from "@nextui-org/breadcrumbs";
 import { useUser } from "@supabase/auth-helpers-react";
 import { createServerSideHelpers } from "@trpc/react-query/server";
 import { ChevronDown } from "lucide-react";

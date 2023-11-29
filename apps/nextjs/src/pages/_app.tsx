@@ -8,7 +8,7 @@ import { useState } from "react";
 import type { AppProps } from "next/app";
 import { Encode_Sans_Expanded } from "next/font/google";
 import { useRouter } from "next/router";
-import { NextUIProvider } from "@nextui-org/react";
+import { NextUIProvider } from "@nextui-org/system";
 import { SessionContextProvider } from "@supabase/auth-helpers-react";
 
 import { api } from "~/utils/api";

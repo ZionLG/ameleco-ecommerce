@@ -1,11 +1,7 @@
 import React, { useEffect } from "react";
 import Link from "next/link";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-  Spinner,
-} from "@nextui-org/react";
+import { Popover, PopoverContent, PopoverTrigger } from "@nextui-org/popover";
+import { Spinner } from "@nextui-org/spinner";
 import { useSessionContext } from "@supabase/auth-helpers-react";
 import { ShoppingCart } from "lucide-react";
 

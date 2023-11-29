@@ -1,5 +1,5 @@
 import React from "react";
-import { Input, Textarea } from "@nextui-org/react";
+import { Input, Textarea } from "@nextui-org/input";
 import { Info, Mail, Pen, User } from "lucide-react";
 import type { SubmitHandler } from "react-hook-form";
 import { useForm } from "react-hook-form";

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Image from "next/image";
-import { Spinner } from "@nextui-org/react";
+import { Spinner } from "@nextui-org/spinner";
 import { useSessionContext } from "@supabase/auth-helpers-react";
 
 import type { RouterOutputs } from "~/utils/api";

@@ -1,11 +1,6 @@
 import { useEffect, useState } from "react";
-import {
-  Input,
-  Select,
-  SelectItem,
-  SelectSection,
-  Textarea,
-} from "@nextui-org/react";
+import { Input, Textarea } from "@nextui-org/input";
+import { Select, SelectItem, SelectSection } from "@nextui-org/select";
 import type {
   BusinessType,
   Occupation,

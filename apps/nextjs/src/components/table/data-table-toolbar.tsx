@@ -1,4 +1,4 @@
-import { Spinner } from "@nextui-org/react";
+import { Spinner } from "@nextui-org/spinner";
 import type { Table } from "@tanstack/react-table";
 import { X } from "lucide-react";
 

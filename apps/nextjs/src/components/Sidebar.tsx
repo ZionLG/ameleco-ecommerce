@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import Link from "next/link";
-import { Button, cn } from "@nextui-org/react";
 import { Menu, X } from "lucide-react";
 
+import { cn } from "~/utils/utils";
 import {
   Sheet,
   SheetContent,
