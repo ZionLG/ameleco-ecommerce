@@ -153,12 +153,19 @@ const ProductPage = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
               />
             </div>
             <Button
-              disabled={
-                isLoading || productData.stock === 0 || session.session == null
-              }
-              onClick={() =>
-                mutate({ productId: productData.id, productQuantity: quantity })
-              }
+              disabled={isLoading}
+              onClick={() => {
+                if (session.session == null) {
+                  toast.error("Please Log in to add to cart.");
+                } else if (productData.stock === 0) {
+                  toast.error("Item is out of stock.");
+                } else {
+                  mutate({
+                    productId: productData.id,
+                    productQuantity: quantity,
+                  });
+                }
+              }}
             >
               {isLoading && (
                 <Spinner color="secondary" className="mr-2" size="sm" />
@@ -223,17 +230,19 @@ const ProductPage = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
                 />
               </div>
               <Button
-                disabled={
-                  isLoading ||
-                  productData.stock === 0 ||
-                  session.session == null
-                }
-                onClick={() =>
-                  mutate({
-                    productId: productData.id,
-                    productQuantity: quantity,
-                  })
-                }
+                disabled={isLoading}
+                onClick={() => {
+                  if (session.session == null) {
+                    toast.error("Please Log in to add to cart.");
+                  } else if (productData.stock === 0) {
+                    toast.error("Item is out of stock.");
+                  } else {
+                    mutate({
+                      productId: productData.id,
+                      productQuantity: quantity,
+                    });
+                  }
+                }}
               >
                 {isLoading && (
                   <Spinner color="secondary" className="mr-2" size="sm" />

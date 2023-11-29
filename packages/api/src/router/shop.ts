@@ -52,6 +52,24 @@ export const shopRouter = createTRPCRouter({
         },
       },
     });
+
+    if (cart)
+      await Promise.all(
+        cart.items.map(async (item) => {
+          if (item.quantity > item.product.stock) {
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message: "Product is not in stock.",
+            });
+          } else {
+            await ctx.prisma.product.update({
+              data: { stock: item.product.stock - item.quantity },
+              where: { id: item.product.id },
+            });
+          }
+        }),
+      );
+
     const line_items = [] as Stripe.PaymentLinkCreateParams.LineItem[];
 
     const promises = (cart?.items ?? []).map(async (item) => {
@@ -67,8 +85,14 @@ export const shopRouter = createTRPCRouter({
 
     line_items.push(...resolvedPrices);
 
-    const paymentLink = await ctx.stripe.paymentLinks.create({
+    const paymentLink = await ctx.stripe.checkout.sessions.create({
       line_items: line_items,
+      customer: `cus_${ctx.user.id}`,
+      mode: "payment",
+      billing_address_collection: "required",
+      success_url:
+        "https://ameleco-ecommerce-nextjs.vercel.app/success?session_id={CHECKOUT_SESSION_ID}",
+      expires_at: Math.floor(Date.now() / 1000) + 3600 * 2,
     });
 
     console.log("URL", paymentLink.url);
@@ -106,6 +130,8 @@ export const shopRouter = createTRPCRouter({
   getCartItem: protectedProcedure
     .input(z.object({ itemId: z.string() }))
     .query(async ({ input, ctx }) => {
+      // Check if stock is updated
+
       const cartItem = await ctx.prisma.cartItem.findUnique({
         where: { id: input.itemId },
         include: { product: true },
@@ -122,7 +148,7 @@ export const shopRouter = createTRPCRouter({
       group = "VISITOR" as Groups;
     }
 
-    return await ctx.prisma.cart.findUnique({
+    const cart = await ctx.prisma.cart.findUnique({
       where: { userId: ctx.user.id },
       select: {
         id: true,
@@ -151,6 +177,15 @@ export const shopRouter = createTRPCRouter({
           },
         },
       },
+    });
+    // Check if stock is updated
+
+    if (cart) {
+      return cart;
+    }
+    const newCart = ctx.prisma.cart.create({
+      data: { userId: ctx.user.id },
+      include: { items: true },
     });
   }),
   addToCart: protectedProcedure

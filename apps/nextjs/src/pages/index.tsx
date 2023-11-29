@@ -61,12 +61,14 @@ export default function HomePage() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className=" flex  flex-col">
-        <section className="relative flex h-[650px] w-full  flex-col justify-center  px-5 lg:px-28">
+        <section className="relative flex h-[650px] w-full  flex-col justify-center  overflow-hidden px-5 lg:px-28">
           <Image
             src={HomeBackground}
             fill={true}
             priority
             alt={"Background Image"}
+            objectFit="cover"
+            objectPosition="left"
           />
 
           <div className="absolute flex flex-col gap-4">
