@@ -67,8 +67,7 @@ export default function HomePage() {
             fill={true}
             priority
             alt={"Background Image"}
-            objectFit="cover"
-            objectPosition="left"
+            className="object-cover object-left"
           />
 
           <div className="absolute flex flex-col gap-4">

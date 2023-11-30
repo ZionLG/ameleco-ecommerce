@@ -3,7 +3,7 @@ import { Input } from "@nextui-org/input";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 import type { SubmitHandler } from "react-hook-form";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 import { Button } from "~/components/ui/button";
@@ -15,6 +15,8 @@ interface signInEmail {
 const LoginEmailForm = () => {
   const {
     register,
+    control,
+    resetField,
     handleSubmit,
     formState: { errors },
   } = useForm<signInEmail>({
@@ -59,16 +61,26 @@ const LoginEmailForm = () => {
           <div className="rounded-lg bg-background  p-3">
             <Mail size={24} className="text-blue-600 " />
           </div>
-          <Input
-            {...register("email", {
+          <Controller
+            name="email"
+            control={control}
+            rules={{
               required: true,
-              pattern: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/i,
-            })}
-            label="Email"
-            variant="bordered"
-            isClearable
-            isInvalid={!!errors.email}
-            errorMessage={!!errors.email && "Email is Invalid"}
+              pattern: /^\w+([\\.-]?\w+)*@\w+([\\.-]?\w+)*(\.\w{2,3})+$/i,
+            }}
+            render={({ field }) => (
+              <Input
+                {...field}
+                label="Email"
+                variant="bordered"
+                isClearable
+                onClear={() => {
+                  resetField("email");
+                }}
+                isInvalid={!!errors.email}
+                errorMessage={!!errors.email && "Email is Invalid"}
+              />
+            )}
           />
         </div>
       </div>
@@ -78,30 +90,37 @@ const LoginEmailForm = () => {
           <div className="rounded-lg bg-background  p-3">
             <Lock size={24} className="text-blue-600 " />
           </div>
-
-          <Input
-            {...register("password", {
+          <Controller
+            name="password"
+            control={control}
+            rules={{
               required: true,
-              pattern: /^.{6,}$/i,
-            })}
-            endContent={
-              <button
-                className="focus:outline-none"
-                type="button"
-                onClick={toggleVisibility}
-              >
-                {isVisible ? (
-                  <Eye className="pointer-events-none text-2xl text-default-400" />
-                ) : (
-                  <EyeOff className="pointer-events-none text-2xl text-default-400" />
-                )}
-              </button>
-            }
-            type={isVisible ? "text" : "password"}
-            variant="bordered"
-            label="Password"
-            isInvalid={!!errors.password}
-            errorMessage={!!errors.password && "Password is Invalid"}
+              minLength: 6,
+              maxLength: 72,
+            }}
+            render={({ field }) => (
+              <Input
+                {...field}
+                label="Password"
+                variant="bordered"
+                endContent={
+                  <button
+                    className="focus:outline-none"
+                    type="button"
+                    onClick={toggleVisibility}
+                  >
+                    {isVisible ? (
+                      <Eye className="pointer-events-none text-2xl text-default-400" />
+                    ) : (
+                      <EyeOff className="pointer-events-none text-2xl text-default-400" />
+                    )}
+                  </button>
+                }
+                type={isVisible ? "text" : "password"}
+                isInvalid={!!errors.password}
+                errorMessage={!!errors.password && "Password is Invalid"}
+              />
+            )}
           />
         </div>
       </div>
