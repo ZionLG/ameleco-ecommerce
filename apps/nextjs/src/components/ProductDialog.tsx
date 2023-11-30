@@ -43,30 +43,54 @@ import {
 import { Separator } from "./ui/separator";
 import { Textarea } from "./ui/textarea";
 
-const CreateProductDialog = () => {
+interface ProductDialogProps {
+  actionType: "Create" | "Update";
+  productId?: string;
+  defaultValues?: {
+    category: string;
+    description: string;
+    imageUrl: string;
+    name: string;
+    stock: number;
+    pricing: {
+      contractor: number;
+      customer: number;
+      frequent: number;
+      professional: number;
+      vip: number;
+      visitor: number;
+    };
+  };
+}
+const ProductDialog = ({
+  actionType,
+  productId,
+  defaultValues = {
+    category: "",
+    description: "",
+    imageUrl: "",
+    name: "",
+    stock: 0,
+    pricing: {
+      contractor: 0,
+      customer: 0,
+      frequent: 0,
+      professional: 0,
+      vip: 0,
+      visitor: 0,
+    },
+  },
+}: ProductDialogProps) => {
   const form = useForm<z.infer<typeof productCreationSchema>>({
     resolver: zodResolver(productCreationSchema),
 
-    defaultValues: {
-      category: "",
-      description: "",
-      imageUrl: "",
-      name: "",
-      stock: 0,
-      pricing: {
-        contractor: 0,
-        customer: 0,
-        frequent: 0,
-        professional: 0,
-        vip: 0,
-        visitor: 0,
-      },
-    },
+    defaultValues: defaultValues,
   });
   const [selectedFile, setSelectedFile] = useState<File>();
-  const [previewLink, setPreviewLink] = useState<string>();
-  const { data } = api.shop.getCategories.useQuery();
-
+  const [previewLink, setPreviewLink] = useState<string | undefined>();
+  const { data } = api.shop.getCategories.useQuery(undefined, {
+    refetchOnWindowFocus: false,
+  });
   const supabase = useSupabaseClient();
 
   useEffect(() => {
@@ -82,24 +106,37 @@ const CreateProductDialog = () => {
   }, [selectedFile]);
   const utils = api.useUtils();
 
-  const { mutate, isLoading } = api.shop.addProduct.useMutation({
-    onSuccess: () => {
-      void utils.shop.allProducts.invalidate();
-      toast.success("Product added successfully.");
-    },
-    onError: (error) => {
-      toast.error(error.message);
-    },
-  });
+  const { mutate: createProduct, isLoading: createProductIsLoading } =
+    api.shop.addProduct.useMutation({
+      onSuccess: () => {
+        void utils.shop.allProducts.invalidate();
+        toast.success("Product added successfully.");
+      },
+      onError: (error) => {
+        toast.error(error.message);
+      },
+    });
+  const { mutate: updateProduct, isLoading: updateProductIsLoading } =
+    api.shop.updateProduct.useMutation({
+      onSuccess: () => {
+        void utils.shop.allProducts.invalidate();
+        toast.success("Product updated successfully.");
+      },
+      onError: (error) => {
+        toast.error(error.message);
+      },
+    });
   function onSubmit(values: z.infer<typeof productCreationSchema>) {
     console.log(values);
-    mutate(values);
+    if (actionType === "Create") createProduct(values);
+    if (actionType === "Update" && productId)
+      updateProduct({ data: values, productId: productId });
   }
   return (
     <Dialog>
       <DialogTrigger>
         <span className={`${cn(buttonVariants({ size: "lg" }))} `}>
-          Add Product
+          {actionType === "Create" ? "Add Product" : "Edit Product"}
         </span>
       </DialogTrigger>
       <DialogContent className="max-h-full max-w-[95%]">
@@ -126,27 +163,28 @@ const CreateProductDialog = () => {
                         <FormLabel>
                           <div className="flex items-center gap-2">
                             Image
-                            {form.watch("imageUrl") != "" && (
-                              <Button
-                                type="button"
-                                onClick={async () => {
-                                  if (selectedFile) {
-                                    const { data, error } =
-                                      await supabase.storage
-                                        .from("Product Images")
-                                        .remove([selectedFile.name]);
-                                  }
-                                  form.resetField("imageUrl");
-                                  setPreviewLink(undefined);
-                                  setSelectedFile(undefined);
-                                }}
-                                className="grow lg:grow-0"
-                                variant={"destructive"}
-                                size={"icon"}
-                              >
-                                <Trash2 />
-                              </Button>
-                            )}
+                            {form.watch("imageUrl") != "" &&
+                              actionType == "Create" && (
+                                <Button
+                                  type="button"
+                                  onClick={async () => {
+                                    if (selectedFile) {
+                                      const { data, error } =
+                                        await supabase.storage
+                                          .from("Product Images")
+                                          .remove([selectedFile.name]);
+                                    }
+                                    form.resetField("imageUrl");
+                                    setPreviewLink(undefined);
+                                    setSelectedFile(undefined);
+                                  }}
+                                  className="grow lg:grow-0"
+                                  variant={"destructive"}
+                                  size={"icon"}
+                                >
+                                  <Trash2 />
+                                </Button>
+                              )}
                           </div>
                         </FormLabel>
                         <FormControl>
@@ -219,7 +257,8 @@ const CreateProductDialog = () => {
                                 <Button
                                   type="button"
                                   disabled={
-                                    form.watch("imageUrl") != "" ||
+                                    (form.watch("imageUrl") != "" &&
+                                      actionType == "Create") ||
                                     selectedFile == undefined
                                   }
                                   className="w-full"
@@ -247,7 +286,8 @@ const CreateProductDialog = () => {
                                     }
                                   }}
                                 >
-                                  {form.watch("imageUrl") == ""
+                                  {form.watch("imageUrl") == "" ||
+                                  actionType === "Update"
                                     ? "Upload"
                                     : "Uploaded"}
                                 </Button>
@@ -494,7 +534,7 @@ const CreateProductDialog = () => {
                 <Button
                   className="grow lg:grow-0"
                   type="submit"
-                  disabled={isLoading}
+                  disabled={createProductIsLoading || updateProductIsLoading}
                 >
                   Submit
                 </Button>
@@ -507,4 +547,4 @@ const CreateProductDialog = () => {
   );
 };
 
-export default CreateProductDialog;
+export default ProductDialog;

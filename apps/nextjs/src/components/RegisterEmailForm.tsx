@@ -19,10 +19,9 @@ import {
   User,
 } from "lucide-react";
 import type { SubmitHandler } from "react-hook-form";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
-import { api } from "~/utils/api";
 import { Button } from "~/components/ui/button";
 
 interface signUpEmail {
@@ -41,6 +40,8 @@ const RegisterEmailForm = () => {
   const {
     register,
     handleSubmit,
+    control,
+    resetField,
     formState: { errors },
   } = useForm<signUpEmail>({
     defaultValues: {
@@ -101,29 +102,50 @@ const RegisterEmailForm = () => {
           <div className="rounded-lg bg-background p-3">
             <User size={24} className="text-blue-600" />
           </div>
-          <Input
-            isRequired
-            {...register("firstName", {
+          <Controller
+            name="firstName"
+            control={control}
+            rules={{
               required: true,
               minLength: 2,
-            })}
-            label="First Name"
-            variant="bordered"
-            isClearable
-            isInvalid={!!errors.firstName}
-            errorMessage={!!errors.firstName && "First name is invalid"}
+            }}
+            render={({ field }) => (
+              <Input
+                {...field}
+                label="First Name"
+                isRequired
+                variant="bordered"
+                isClearable
+                onClear={() => {
+                  resetField("firstName");
+                }}
+                isInvalid={!!errors.firstName}
+                errorMessage={!!errors.firstName && "First name is invalid"}
+              />
+            )}
           />
-          <Input
-            isRequired
-            {...register("lastName", {
+
+          <Controller
+            name="lastName"
+            control={control}
+            rules={{
               required: true,
               minLength: 2,
-            })}
-            label="Last Name"
-            variant="bordered"
-            isClearable
-            isInvalid={!!errors.lastName}
-            errorMessage={!!errors.lastName && "Last name is invalid"}
+            }}
+            render={({ field }) => (
+              <Input
+                {...field}
+                label="Last Name"
+                variant="bordered"
+                isClearable
+                isRequired
+                onClear={() => {
+                  resetField("lastName");
+                }}
+                isInvalid={!!errors.lastName}
+                errorMessage={!!errors.lastName && "Last name is invalid"}
+              />
+            )}
           />
         </div>
       </div>
@@ -132,35 +154,55 @@ const RegisterEmailForm = () => {
           <div className="rounded-lg bg-background  p-3">
             <Mail size={24} className="text-blue-600 " />
           </div>
-          <Input
-            isRequired
-            {...register("email", {
+          <Controller
+            name="email"
+            control={control}
+            rules={{
               required: true,
               pattern: /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/i,
-            })}
-            label="Email"
-            variant="bordered"
-            isClearable
-            isInvalid={!!errors.email}
-            errorMessage={!!errors.email && "Email is Invalid"}
+            }}
+            render={({ field }) => (
+              <Input
+                {...field}
+                label="Email"
+                variant="bordered"
+                isClearable
+                isRequired
+                onClear={() => {
+                  resetField("email");
+                }}
+                isInvalid={!!errors.email}
+                errorMessage={!!errors.email && "Email is Invalid"}
+              />
+            )}
           />
         </div>
         <div className="flex items-center gap-2">
           <div className="rounded-lg bg-background p-3">
             <PhoneCall size={24} className="text-blue-600" />
           </div>
-          <Input
-            isRequired
-            type={"tel"}
-            {...register("phone", {
+          <Controller
+            name="phone"
+            control={control}
+            rules={{
               required: true,
               pattern: /^\D*([2-9]\d{2})(\D*)([2-9]\d{2})(\D*)(\d{4})\D*$/,
-            })}
-            label="Phone Number"
-            variant="bordered"
-            isClearable
-            isInvalid={!!errors.phone}
-            errorMessage={!!errors.phone && "Phone number is invalid"}
+            }}
+            render={({ field }) => (
+              <Input
+                {...field}
+                type={"tel"}
+                label="Phone"
+                variant="bordered"
+                isClearable
+                isRequired
+                onClear={() => {
+                  resetField("phone");
+                }}
+                isInvalid={!!errors.phone}
+                errorMessage={!!errors.phone && "Phone number is invalid"}
+              />
+            )}
           />
         </div>
       </div>
@@ -211,14 +253,23 @@ const RegisterEmailForm = () => {
         <div className="flex items-center gap-2">
           <div className="rounded-lg bg-background p-3">
             <Home size={24} className="text-blue-600 " />
-          </div>
-          <Input
-            {...register("companyName")}
-            label="Company name"
-            variant="bordered"
-            isClearable
-            isInvalid={!!errors.companyName}
-            errorMessage={!!errors.companyName && "Company name is Invalid"}
+          </div>{" "}
+          <Controller
+            name="companyName"
+            control={control}
+            render={({ field }) => (
+              <Input
+                {...field}
+                label="Company name"
+                variant="bordered"
+                isClearable
+                onClear={() => {
+                  resetField("companyName");
+                }}
+                isInvalid={!!errors.companyName}
+                errorMessage={!!errors.companyName && "Company name is Invalid"}
+              />
+            )}
           />
           <Select
             label="Business Type"
@@ -246,32 +297,38 @@ const RegisterEmailForm = () => {
           <div className="rounded-lg bg-background  p-3">
             <Lock size={24} className="text-blue-600 " />
           </div>
-
-          <Input
-            isRequired
-            {...register("password", {
+          <Controller
+            name="password"
+            control={control}
+            rules={{
               required: true,
               minLength: 6,
               maxLength: 72,
-            })}
-            endContent={
-              <button
-                className="focus:outline-none"
-                type="button"
-                onClick={toggleVisibility}
-              >
-                {isVisible ? (
-                  <Eye className="pointer-events-none text-2xl text-default-400" />
-                ) : (
-                  <EyeOff className="pointer-events-none text-2xl text-default-400" />
-                )}
-              </button>
-            }
-            type={isVisible ? "text" : "password"}
-            variant="bordered"
-            label="Password"
-            isInvalid={!!errors.password}
-            errorMessage={!!errors.password && "Password is Invalid"}
+            }}
+            render={({ field }) => (
+              <Input
+                {...field}
+                label="Password"
+                variant="bordered"
+                isRequired
+                endContent={
+                  <button
+                    className="focus:outline-none"
+                    type="button"
+                    onClick={toggleVisibility}
+                  >
+                    {isVisible ? (
+                      <Eye className="pointer-events-none text-2xl text-default-400" />
+                    ) : (
+                      <EyeOff className="pointer-events-none text-2xl text-default-400" />
+                    )}
+                  </button>
+                }
+                type={isVisible ? "text" : "password"}
+                isInvalid={!!errors.password}
+                errorMessage={!!errors.password && "Password is Invalid"}
+              />
+            )}
           />
         </div>
       </div>
@@ -281,11 +338,16 @@ const RegisterEmailForm = () => {
           <div className="rounded-lg bg-background p-3">
             <Info size={24} className="text-blue-600 " />
           </div>
-
-          <Textarea
-            label="Additional Information"
-            {...register("additionalInfo")}
-            variant="bordered"
+          <Controller
+            name="additionalInfo"
+            control={control}
+            render={({ field }) => (
+              <Textarea
+                {...field}
+                label="Additional Information"
+                variant="bordered"
+              />
+            )}
           />
         </div>
       </div>

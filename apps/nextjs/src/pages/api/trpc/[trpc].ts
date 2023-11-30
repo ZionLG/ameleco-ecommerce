@@ -1,5 +1,6 @@
-import { appRouter, createTRPCContext } from "@ameleco/api";
 import { createNextApiHandler } from "@trpc/server/adapters/next";
+
+import { appRouter, createTRPCContext } from "@ameleco/api";
 
 // export API handler
 export default createNextApiHandler({

@@ -21,8 +21,12 @@ interface SearchProps {
 }
 
 const ProductSearch = ({ maxResults = 5 }: SearchProps) => {
-  const { data } = api.shop.allProducts.useQuery();
-  const { data: categoryData } = api.shop.getCategories.useQuery();
+  const { data } = api.shop.allProducts.useQuery(undefined, {
+    refetchOnWindowFocus: false,
+  });
+  const { data: categoryData } = api.shop.getCategories.useQuery(undefined, {
+    refetchOnWindowFocus: false,
+  });
   const [category, setCategory] = useState<string>("all categories");
 
   const [searchTerm, setSearchTerm] = useState<string>("");

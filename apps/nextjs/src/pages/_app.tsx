@@ -18,6 +18,7 @@ import { env } from "~/env.mjs";
 const encode_Sans_Expanded = Encode_Sans_Expanded({
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
   subsets: ["latin"],
+  display: "swap",
 });
 
 function MyApp({

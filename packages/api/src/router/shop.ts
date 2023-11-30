@@ -3,7 +3,7 @@ import { TRPCError } from "@trpc/server";
 import type Stripe from "stripe";
 import { z } from "zod";
 
-import { productCreationSchema } from "../schemas";
+import { productCreationSchema, productUpdateSchema } from "../schemas";
 import {
   createTRPCRouter,
   protectedProcedure,
@@ -52,6 +52,24 @@ export const shopRouter = createTRPCRouter({
         },
       },
     });
+
+    if (cart)
+      await Promise.all(
+        cart.items.map(async (item) => {
+          if (item.quantity > item.product.stock) {
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message: "Product is not in stock.",
+            });
+          } else {
+            await ctx.prisma.product.update({
+              data: { stock: item.product.stock - item.quantity },
+              where: { id: item.product.id },
+            });
+          }
+        }),
+      );
+
     const line_items = [] as Stripe.PaymentLinkCreateParams.LineItem[];
 
     const promises = (cart?.items ?? []).map(async (item) => {
@@ -67,8 +85,14 @@ export const shopRouter = createTRPCRouter({
 
     line_items.push(...resolvedPrices);
 
-    const paymentLink = await ctx.stripe.paymentLinks.create({
+    const paymentLink = await ctx.stripe.checkout.sessions.create({
       line_items: line_items,
+      customer: `cus_${ctx.user.id}`,
+      mode: "payment",
+      billing_address_collection: "required",
+      success_url:
+        "https://ameleco-ecommerce-nextjs.vercel.app/success?session_id={CHECKOUT_SESSION_ID}",
+      expires_at: Math.floor(Date.now() / 1000) + 3600 * 2,
     });
 
     console.log("URL", paymentLink.url);
@@ -103,9 +127,69 @@ export const shopRouter = createTRPCRouter({
 
       return cartItem;
     }),
+  getCheckoutSession: protectedProcedure
+    .input(z.object({ session_id: z.string() }))
+    .query(async ({ input, ctx }) => {
+      if (ctx.stripe === null) {
+        return;
+      }
+      const checkoutSession = await ctx.stripe.checkout.sessions.retrieve(
+        input.session_id,
+        { expand: ["line_items"] },
+      );
+
+      if (checkoutSession.customer !== `cus_${ctx.user.id}`) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Session is not yours.",
+        });
+      }
+      const items = [] as {
+        name: string;
+        unit_amount: number;
+        quantity: number;
+      }[];
+      if (checkoutSession.line_items)
+        checkoutSession.line_items.data.forEach((item) => {
+          items.push({
+            name: item.description,
+            unit_amount: (item.price?.unit_amount ?? 0) / 100,
+            quantity: item.quantity ?? 0,
+          });
+        });
+      return {
+        products: items,
+        total: (checkoutSession.amount_total ?? 0) / 100,
+        sessionCreationDate: checkoutSession.created,
+      };
+      // if (checkoutSession && checkoutSession.line_items) {
+      //   const items = [];
+      //   const has_more = checkoutSession.line_items.has_more;
+      //   const cur_items = checkoutSession.line_items.data;
+      //   cur_items.forEach((item) => {
+      //     items.push(item);
+      //   });
+      //   while (has_more) {
+      //     const newItems = ctx.stripe.checkout.sessions.listLineItems(
+      //       input.session_id,
+      //       { starting_after: cur_items[-1].},
+      //     );
+      //     cur_items.forEach((item) => {
+      //       items.push(item);
+      //     });
+      //   }
+      //   console.log(checkoutSession);
+      //   return {
+      //     products: checkoutSession.line_items,
+      //     total: (checkoutSession.amount_total ?? 0) / 100,
+      //   };
+      // }
+    }),
   getCartItem: protectedProcedure
     .input(z.object({ itemId: z.string() }))
     .query(async ({ input, ctx }) => {
+      // Check if stock is updated
+
       const cartItem = await ctx.prisma.cartItem.findUnique({
         where: { id: input.itemId },
         include: { product: true },
@@ -122,7 +206,7 @@ export const shopRouter = createTRPCRouter({
       group = "VISITOR" as Groups;
     }
 
-    return await ctx.prisma.cart.findUnique({
+    const cart = await ctx.prisma.cart.findUnique({
       where: { userId: ctx.user.id },
       select: {
         id: true,
@@ -152,6 +236,19 @@ export const shopRouter = createTRPCRouter({
         },
       },
     });
+    // Check if stock is updated
+
+    if (cart) {
+      return cart;
+    }
+    const newCart = ctx.prisma.cart.create({
+      data: { userId: ctx.user.id },
+      include: {
+        items: { include: { product: { include: { price: true } } } },
+      },
+    });
+
+    return newCart;
   }),
   addToCart: protectedProcedure
     .input(
@@ -342,6 +439,25 @@ export const shopRouter = createTRPCRouter({
         group = "VISITOR" as Groups;
       }
 
+      if (ctx.user?.app_metadata.AMELECO_is_staff) {
+        return ctx.prisma.product.findUnique({
+          where: { name: input.productName },
+          include: {
+            category: true,
+            price: {
+              select: {
+                contractor: true,
+                customer: true,
+                frequent: true,
+                professional: true,
+                vip: true,
+                visitor: true,
+              },
+            },
+          },
+        });
+      }
+
       return ctx.prisma.product.findUnique({
         where: { name: input.productName },
         include: {
@@ -432,6 +548,64 @@ export const shopRouter = createTRPCRouter({
         images: [input.imageUrl],
         shippable: true,
         type: "good",
+        metadata: { category: category.name },
+      });
+
+      return product;
+    }),
+  updateProduct: staffProcedure
+    .input(productUpdateSchema)
+    .mutation(async ({ input, ctx }) => {
+      if (ctx.stripe == null) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Stripe server error.",
+        });
+      }
+
+      const category = await ctx.prisma.category.findUnique({
+        where: { name: input.data.category },
+      });
+
+      if (category == null) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Category not found.",
+        });
+      }
+
+      const product = await ctx.prisma.product.update({
+        where: {
+          id: input.productId,
+        },
+        data: {
+          imageUrl: input.data.imageUrl,
+          stock: input.data.stock,
+          categoryId: category.id,
+          name: input.data.name,
+          description: input.data.description,
+        },
+      });
+      const { pricing: pricingInput } = input.data;
+
+      await ctx.prisma.pricing.update({
+        where: {
+          id: product.priceId,
+        },
+        data: {
+          contractor: pricingInput.contractor,
+          customer: pricingInput.customer,
+          frequent: pricingInput.frequent,
+          professional: pricingInput.professional,
+          vip: pricingInput.vip,
+          visitor: pricingInput.visitor,
+        },
+      });
+
+      await ctx.stripe.products.update(product.id, {
+        name: input.data.name,
+        images: [input.data.imageUrl],
+        shippable: true,
         metadata: { category: category.name },
       });
 
