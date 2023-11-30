@@ -4,6 +4,7 @@ import type {
   GetStaticPropsContext,
   InferGetStaticPropsType,
 } from "next";
+import dynamic from "next/dynamic";
 import Head from "next/head";
 import Image from "next/image";
 import { useRouter } from "next/router";
@@ -20,11 +21,26 @@ import { appRouter } from "@ameleco/api";
 import { prisma } from "@ameleco/db";
 
 import { api } from "~/utils/api";
-import { ShouldShowPrice } from "~/utils/utils";
+import { cn, ShouldShowPrice } from "~/utils/utils";
 import Quantity from "~/components/Quantity";
-import { Button } from "~/components/ui/button";
+import { Button, buttonVariants } from "~/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "~/components/ui/dialog";
 import { Separator } from "~/components/ui/separator";
 
+const DynamicUpdateProductDialog = dynamic(
+  () => import("../../components/ProductDialog"),
+  {
+    loading: () => <Button size={"lg"}>Edit Product</Button>,
+  },
+);
 const ProductPage = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
   const { name } = props;
   const session = useSessionContext();
@@ -55,7 +71,6 @@ const ProductPage = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
         void router.push("/");
       },
     });
-
   if (product.data) {
     const productData = product.data;
     return (
@@ -73,24 +88,66 @@ const ProductPage = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
           <BreadcrumbItem href="/shop">Shop</BreadcrumbItem>
           <BreadcrumbItem>{name}</BreadcrumbItem>
         </Breadcrumbs>
-        {session.session?.user.app_metadata.AMELECO_is_staff && (
-          <>
-            <Separator />
-            <div className="flex items-center justify-center gap-10">
-              <Button size={"lg"}>Edit Product</Button>
-              <Button
-                variant={"destructive"}
-                size={"lg"}
-                onClick={() => {
-                  mutateDelete({ productId: productData.id });
-                }}
-              >
-                Delete Product
-              </Button>
-            </div>
-            <Separator />
-          </>
-        )}
+        {session.session?.user.app_metadata.AMELECO_is_staff &&
+          product.isFetchedAfterMount && (
+            <>
+              <Separator />
+              <div className="flex items-center justify-center gap-10">
+                <DynamicUpdateProductDialog
+                  actionType="Update"
+                  productId={productData.id}
+                  defaultValues={{
+                    category: productData.category.name,
+                    description: productData.description ?? "",
+                    imageUrl: productData.imageUrl,
+                    name: productData.name,
+                    stock: productData.stock,
+                    pricing: {
+                      contractor: productData.price.contractor,
+                      frequent: productData.price.frequent,
+                      professional: productData.price.professional,
+                      vip: productData.price.vip,
+                      visitor: productData.price.visitor,
+                      customer: productData.price.customer,
+                    },
+                  }}
+                />
+                <Dialog>
+                  <DialogTrigger>
+                    <span
+                      className={`${cn(
+                        buttonVariants({ variant: "destructive", size: "lg" }),
+                      )} `}
+                    >
+                      Delete Product
+                    </span>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Are you sure absolutely sure?</DialogTitle>
+                      <DialogDescription>
+                        This action cannot be undone. This will permanently
+                        delete the product.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                      <Button
+                        variant={"destructive"}
+                        size={"lg"}
+                        disabled={isLoadingDelete}
+                        onClick={() => {
+                          mutateDelete({ productId: productData.id });
+                        }}
+                      >
+                        Delete Product
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              </div>
+              <Separator />
+            </>
+          )}
         <div className="invisible hidden justify-center gap-10 md:visible md:flex">
           <div className="grid max-w-2xl grid-rows-2 gap-10">
             <div className=" rounded-sm bg-background p-10 shadow-md">
@@ -98,6 +155,7 @@ const ProductPage = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
                 src={productData.imageUrl}
                 alt={productData.name}
                 width={500}
+                priority
                 height={500}
                 className="max-h-[36rem]"
               />
@@ -115,15 +173,31 @@ const ProductPage = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
             <span className="flex min-w-fit items-center gap-2">
               Price:
               <span className="text-xl font-semibold ">
-                {Object.keys(productData.price).map(function (key) {
-                  if (ShouldShowPrice(key, session))
-                    return (
-                      "$" +
-                      productData.price[key as keyof typeof productData.price]
-                    );
+                {session.session?.user.app_metadata.AMELECO_is_staff ? (
+                  <div className={"ml-2 flex flex-col gap-2"}>
+                    {Object.keys(productData.price).map(function (key) {
+                      return (
+                        <span key={key} className="capitalize">
+                          {`${key}: $${
+                            productData.price[
+                              key as keyof typeof productData.price
+                            ]
+                          }`}
+                        </span>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  Object.keys(productData.price).map(function (key) {
+                    if (ShouldShowPrice(key, session))
+                      return (
+                        "$" +
+                        productData.price[key as keyof typeof productData.price]
+                      );
 
-                  return <Spinner key={key} size="sm" />;
-                })}
+                    return <Spinner key={key} size="sm" />;
+                  })
+                )}
               </span>
             </span>
             <div className="flex whitespace-nowrap">
@@ -183,6 +257,7 @@ const ProductPage = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
                 src={productData.imageUrl}
                 alt={productData.name}
                 width={500}
+                priority
                 height={500}
                 className="max-h-[36rem]"
               />
@@ -192,15 +267,33 @@ const ProductPage = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
               <span className="flex min-w-fit items-center gap-2">
                 Price:
                 <span className="text-xl font-semibold ">
-                  {Object.keys(productData.price).map(function (key) {
-                    if (ShouldShowPrice(key, session))
-                      return (
-                        "$" +
-                        productData.price[key as keyof typeof productData.price]
-                      );
+                  {session.session?.user.app_metadata.AMELECO_is_staff ? (
+                    <div className={"ml-2 flex flex-col gap-2"}>
+                      {Object.keys(productData.price).map(function (key) {
+                        return (
+                          <span key={key} className="capitalize">
+                            {`${key}: $${
+                              productData.price[
+                                key as keyof typeof productData.price
+                              ]
+                            }`}
+                          </span>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    Object.keys(productData.price).map(function (key) {
+                      if (ShouldShowPrice(key, session))
+                        return (
+                          "$" +
+                          productData.price[
+                            key as keyof typeof productData.price
+                          ]
+                        );
 
-                    return <Spinner key={key} size="sm" />;
-                  })}
+                      return <Spinner key={key} size="sm" />;
+                    })
+                  )}
                 </span>
               </span>
               <div className="flex whitespace-nowrap">

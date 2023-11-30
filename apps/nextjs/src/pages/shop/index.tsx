@@ -28,7 +28,7 @@ import {
 } from "~/components/ui/sheet";
 
 const DynamicCreateProductDialog = dynamic(
-  () => import("../../components/CreateProductDialog"),
+  () => import("../../components/ProductDialog"),
   {
     loading: () => <Button size={"lg"}>Add Product</Button>,
   },
@@ -46,11 +46,15 @@ const DynamicCreateCategoryDialog = dynamic(
 );
 const Shop = () => {
   const router = useRouter();
-
-  const products = api.shop.allProducts.useQuery();
-  const user = useUser();
-  const categories = api.shop.getCategories.useQuery();
   const { category: urlCategory, q: searchTerm } = router.query;
+
+  const products = api.shop.allProducts.useQuery(undefined, {
+    refetchOnWindowFocus: false,
+  });
+  const user = useUser();
+  const categories = api.shop.getCategories.useQuery(undefined, {
+    refetchOnWindowFocus: false,
+  });
   return (
     <main className="flex flex-col justify-center gap-10 px-10 py-5 ">
       <div className="flex flex-col items-center justify-around gap-10 bg-[#F2F2F7] p-5 font-bold md:flex-row">
@@ -89,7 +93,7 @@ const Shop = () => {
         <>
           <Separator />
           <div className="flex items-center justify-center gap-10">
-            <DynamicCreateProductDialog />
+            <DynamicCreateProductDialog actionType="Create" />
             <DynamicCreateCategoryDialog />
           </div>
           <Separator />

@@ -2,7 +2,7 @@ import React from "react";
 import { Input, Textarea } from "@nextui-org/input";
 import { Info, Mail, Pen, User } from "lucide-react";
 import type { SubmitHandler } from "react-hook-form";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 import { Button } from "./ui/button";
@@ -17,6 +17,8 @@ const FeedbackForm = () => {
   const {
     register,
     handleSubmit,
+    resetField,
+    control,
     formState: { errors },
   } = useForm<Feedback>({
     defaultValues: {
@@ -45,14 +47,26 @@ const FeedbackForm = () => {
           <div className="rounded-lg bg-background  p-3">
             <Pen size={24} className="text-blue-600 " />
           </div>
-          <Input
-            {...register("subject", {
+          <Controller
+            name="subject"
+            control={control}
+            rules={{
               required: true,
-            })}
-            label="Subject"
-            variant="bordered"
-            isInvalid={!!errors.subject}
-            errorMessage={!!errors.subject && "Subject is Invalid"}
+            }}
+            render={({ field }) => (
+              <Input
+                isRequired
+                {...field}
+                label="Subject"
+                variant="bordered"
+                isClearable
+                onClear={() => {
+                  resetField("subject");
+                }}
+                isInvalid={!!errors.subject}
+                errorMessage={!!errors.subject && "Subject is Invalid"}
+              />
+            )}
           />
         </div>
       </div>
@@ -62,11 +76,17 @@ const FeedbackForm = () => {
           <div className="rounded-lg bg-background p-3">
             <Info size={24} className="text-blue-600 " />
           </div>
-
-          <Textarea
-            label="Message"
-            {...register("message")}
-            variant="bordered"
+          <Controller
+            name="message"
+            control={control}
+            render={({ field }) => (
+              <Textarea
+                isRequired
+                {...field}
+                label="Message"
+                variant="bordered"
+              />
+            )}
           />
         </div>
       </div>
@@ -76,16 +96,27 @@ const FeedbackForm = () => {
             <div className="rounded-lg bg-background  p-3">
               <Mail size={24} className="text-blue-600 " />
             </div>
-            <Input
-              {...register("email", {
+            <Controller
+              name="email"
+              control={control}
+              rules={{
                 required: true,
-                pattern: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/i,
-              })}
-              label="Email"
-              variant="bordered"
-              isClearable
-              isInvalid={!!errors.email}
-              errorMessage={!!errors.email && "Email is Invalid"}
+                pattern: /^\w+([\\.-]?\w+)*@\w+([\\.-]?\w+)*(\.\w{2,3})+$/i,
+              }}
+              render={({ field }) => (
+                <Input
+                  isRequired
+                  {...field}
+                  label="Email"
+                  variant="bordered"
+                  isClearable
+                  onClear={() => {
+                    resetField("email");
+                  }}
+                  isInvalid={!!errors.email}
+                  errorMessage={!!errors.email && "Email is Invalid"}
+                />
+              )}
             />
           </div>
         </div>
@@ -95,14 +126,26 @@ const FeedbackForm = () => {
             <div className="rounded-lg bg-background  p-3">
               <User size={24} className="text-blue-600 " />
             </div>
-            <Input
-              {...register("name", {
-                required: false,
-              })}
-              label="Name"
-              variant="bordered"
-              isInvalid={!!errors.name}
-              errorMessage={!!errors.name && "Name is Invalid"}
+            <Controller
+              name="name"
+              control={control}
+              rules={{
+                required: true,
+              }}
+              render={({ field }) => (
+                <Input
+                  isRequired
+                  {...field}
+                  label="Name"
+                  variant="bordered"
+                  isClearable
+                  onClear={() => {
+                    resetField("name");
+                  }}
+                  isInvalid={!!errors.name}
+                  errorMessage={!!errors.name && "Name is Invalid"}
+                />
+              )}
             />
           </div>
         </div>
