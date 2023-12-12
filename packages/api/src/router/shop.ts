@@ -3,7 +3,12 @@ import { TRPCError } from "@trpc/server";
 import type Stripe from "stripe";
 import { z } from "zod";
 
-import { productCreationSchema, productUpdateSchema } from "../schemas";
+import {
+  filtersStateSchemaOrders,
+  productCreationSchema,
+  productUpdateSchema,
+  sortStateSchemaOrders,
+} from "../schemas";
 import {
   createTRPCRouter,
   protectedProcedure,
@@ -18,11 +23,11 @@ export const shopRouter = createTRPCRouter({
     });
   }),
   createPaymentLink: protectedProcedure.mutation(async ({ ctx }) => {
-    if (ctx.stripe === null) {
+    if (ctx.stripe === null || ctx.req === null) {
       return;
     }
     let group = "VISITOR" as Groups;
-
+    console.log(ctx.req.headers.host);
     if (ctx.user) {
       group = ctx.user.app_metadata.AMELECO_group as Groups;
     } else {
@@ -84,17 +89,21 @@ export const shopRouter = createTRPCRouter({
     const resolvedPrices = await Promise.all(promises);
 
     line_items.push(...resolvedPrices);
-
+    const protocol = ctx.req.headers.host?.includes("localhost")
+      ? "http"
+      : "https";
     const paymentLink = await ctx.stripe.checkout.sessions.create({
       line_items: line_items,
+      invoice_creation: {
+        enabled: true,
+      },
       customer: `cus_${ctx.user.id}`,
       mode: "payment",
       billing_address_collection: "required",
-      success_url:
-        "https://ameleco-ecommerce-nextjs.vercel.app/success?session_id={CHECKOUT_SESSION_ID}",
+      success_url: `${protocol}://${ctx.req.headers.host}/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${protocol}://${ctx.req.headers.host}/cart`,
       expires_at: Math.floor(Date.now() / 1000) + 3600 * 2,
     });
-
     console.log("URL", paymentLink.url);
     return paymentLink.url;
   }),
@@ -184,6 +193,133 @@ export const shopRouter = createTRPCRouter({
       //     total: (checkoutSession.amount_total ?? 0) / 100,
       //   };
       // }
+    }),
+  getOrders: staffProcedure
+    .input(
+      z.object({
+        take: z.number().min(1).max(100),
+        skip: z.number().min(0).max(100),
+        sort: sortStateSchemaOrders,
+        filter: filtersStateSchemaOrders,
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      console.log(input);
+      if (!ctx.stripe) return;
+      let orderByObject: object | object[] | undefined;
+      if (input.sort[0]) {
+        const sortObject = input.sort[0];
+        if (sortObject.id === "fullName") {
+          orderByObject = {
+            user: [
+              { firstName: sortObject.desc ? "desc" : "asc" },
+              { lastName: sortObject.desc ? "desc" : "asc" },
+            ],
+          };
+        } else if (sortObject.id === "email") {
+          orderByObject = {
+            user: {
+              [sortObject.id]: sortObject.desc ? "desc" : "asc",
+            },
+          };
+        } else {
+          orderByObject = {
+            [sortObject.id]: sortObject.desc ? "desc" : "asc",
+          };
+        }
+      }
+      console.log("orderByObject is", orderByObject);
+      const whereObject = {} as {
+        email?: {
+          contains: string;
+        };
+        phone?: {
+          contains: string;
+        };
+        firstName?: {
+          contains: string;
+        };
+        lastName?: {
+          contains: string;
+        };
+        OR?: (
+          | { firstName: { contains: string } }
+          | { lastName: { contains: string } }
+        )[];
+      };
+      input.filter.forEach((obj) => {
+        const { id, value } = obj;
+
+        // Check if the object has a "value" field
+        if (value) {
+          // Check the "id" field and construct the where object accordingly
+          if (id === "email" || id === "phone") {
+            whereObject[id] = { contains: value as string };
+          } else if (id === "fullName") {
+            // Split fullName into firstName and lastName
+            const [firstName, lastName] = (value as string).split(" ");
+            if (lastName && firstName) {
+              whereObject.firstName = { contains: firstName };
+              whereObject.lastName = { contains: lastName };
+            } else if (firstName) {
+              // if only firstName is defined, check both first and last name for the input
+              whereObject.OR = [
+                { firstName: { contains: firstName } },
+                { lastName: { contains: firstName } },
+              ];
+            }
+          }
+        }
+      });
+      console.log(whereObject);
+      const [data, count] = await ctx.prisma.$transaction([
+        ctx.prisma.order.findMany({
+          take: input.take,
+          skip: input.skip == 0 ? undefined : input.skip,
+          include: {
+            user: {
+              select: {
+                firstName: true,
+                lastName: true,
+                email: true,
+                userId: true,
+                phone: true,
+              },
+            },
+          },
+          where: {
+            user: whereObject as object,
+          },
+          orderBy: orderByObject,
+        }),
+        ctx.prisma.order.count(),
+      ]);
+      const newDataArray = await Promise.all(
+        data.map(async (profile) => {
+          // Assuming profile.userId is the Supabase user ID
+          const supabaseUser = await ctx.supabase?.auth.admin.getUserById(
+            profile.userId,
+          );
+          // Extract app_metadata from Supabase user
+          const appMetadata = supabaseUser!.data.user!.app_metadata;
+
+          // Combine profile data with app_metadata
+          const combinedData = {
+            ...profile,
+            appMetadata: {
+              AMELECO_group: appMetadata.AMELECO_group as Groups,
+              AMELECO_is_staff: appMetadata.AMELECO_is_staff as boolean,
+            },
+          };
+
+          return combinedData;
+        }),
+      );
+      console.log("USERS COUNT", count);
+      return {
+        data: newDataArray,
+        count,
+      };
     }),
   getCartItem: protectedProcedure
     .input(z.object({ itemId: z.string() }))
@@ -446,12 +582,12 @@ export const shopRouter = createTRPCRouter({
             category: true,
             price: {
               select: {
-                contractor: true,
+                visitor: true,
                 customer: true,
                 frequent: true,
+                contractor: true,
                 professional: true,
                 vip: true,
-                visitor: true,
               },
             },
           },

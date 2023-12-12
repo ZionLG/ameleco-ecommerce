@@ -18,7 +18,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 
-import { DataTableToolbar } from "../../table/data-table-toolbar";
+import type { DataTableToolbarProps } from "../../user-table/data-table-toolbar";
 import {
   Table,
   TableBody,
@@ -31,6 +31,7 @@ import { DataTablePagination } from "./data-table-pagination";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
+  Toolbar: React.ComponentType<DataTableToolbarProps<TData>>;
   data: {
     isLoading: boolean;
     rows: TData[] | undefined;
@@ -50,6 +51,7 @@ interface DataTableProps<TData, TValue> {
 
 export function DataTable<TData, TValue>({
   columns,
+  Toolbar,
   data,
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState({});
@@ -90,7 +92,7 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="space-y-4">
-      <DataTableToolbar table={table} isLoading={data.isLoading} />
+      <Toolbar table={table} isLoading={data.isLoading} />
       <div className="rounded-md border">
         <Table>
           <TableHeader>

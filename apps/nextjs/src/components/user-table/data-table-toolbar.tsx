@@ -13,7 +13,7 @@ import {
   PurchaseFrequencyData,
 } from "./data/data";
 
-interface DataTableToolbarProps<TData> {
+export interface DataTableToolbarProps<TData> {
   table: Table<TData>;
   isLoading: boolean;
 }

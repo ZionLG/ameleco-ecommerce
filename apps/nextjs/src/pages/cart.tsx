@@ -30,7 +30,7 @@ const CartPage = () => {
   const { mutate, isLoading } = api.shop.createPaymentLink.useMutation({
     onSuccess: (data) => {
       if (data) {
-        void window.open(data);
+        window.location.href = data;
       }
     },
   });
