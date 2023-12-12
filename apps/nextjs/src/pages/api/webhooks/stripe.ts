@@ -99,8 +99,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       case "checkout.session.expired":
         break;
 
-      case "invoice.finalized":
-        await prisma.order.update({
+      case "invoice.finalized": {
+        const order = await prisma.order.update({
           where: {
             paymentId: event.data.object.payment_intent as string,
           },
@@ -108,7 +108,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
             invoiceId: event.data.object.id,
           },
         });
+        console.log(order);
         break;
+      }
+
       default:
         console.warn(`🤷‍♀️ Unhandled event type: ${event.type}`);
         break;

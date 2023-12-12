@@ -1,7 +1,10 @@
+import Link from "next/link";
 import { createColumnHelper } from "@tanstack/react-table";
 import type { ColumnDef } from "@tanstack/react-table";
 
+import { cn } from "~/utils/utils";
 import { Badge } from "../ui/badge";
+import { buttonVariants } from "../ui/button";
 import { Checkbox } from "../ui/checkbox";
 import { DataTableColumnHeader } from "../ui/generic-table/data-table-column-header";
 import { DataTableRowActions } from "./data-table-row-actions";
@@ -72,9 +75,90 @@ export const columns: ColumnDef<orderSchema>[] = [
     },
   ) as ColumnDef<orderSchema>,
   columnHelper.accessor("user.phone", {
+    id: "phone",
     cell: (info) => <span>{info.getValue()}</span>,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Phone" />
+    ),
+    enableSorting: false,
+    enableHiding: true,
+  }) as ColumnDef<orderSchema>,
+  columnHelper.accessor("address", {
+    cell: (info) => (
+      <div className="flex flex-col gap-1">
+        <span>{info.getValue()?.city}</span>
+        <span>{info.getValue()?.line1}</span>
+        <span>{info.getValue()?.line2}</span>
+        <span>{info.getValue()?.postal_code}</span>
+      </div>
+    ),
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Address" />
+    ),
+    enableSorting: false,
+    enableHiding: true,
+  }) as ColumnDef<orderSchema>,
+
+  columnHelper.accessor("total", {
+    cell: (info) => <span>${(info.getValue() ?? 0) / 100}</span>,
+
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Total" />
+    ),
+    enableSorting: false,
+    enableHiding: true,
+  }) as ColumnDef<orderSchema>,
+  columnHelper.accessor(
+    (row) => {
+      return { hosted: row.hosted_invoice_url, pdf: row.invoice_pdf };
+    },
+    {
+      id: "Invoice",
+      cell: (info) => (
+        <div className="flex flex-col gap-2">
+          <a
+            className={`${cn(buttonVariants({ variant: "link" }))} `}
+            href={info.getValue().hosted ?? ""}
+          >
+            Hosted Link
+          </a>
+          <a
+            className={`${cn(buttonVariants({ variant: "link" }))} `}
+            href={info.getValue().pdf ?? ""}
+          >
+            PDF Link
+          </a>
+        </div>
+      ),
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Invoice" />
+      ),
+      enableSorting: false,
+      enableHiding: true,
+    },
+  ) as ColumnDef<orderSchema>,
+
+  columnHelper.accessor("sessionId", {
+    id: "Items",
+    cell: (info) => (
+      <Link
+        className={`${cn(buttonVariants({ variant: "link" }))} `}
+        href={`/success?session_id=${info.getValue()}`}
+      >
+        Items
+      </Link>
+    ),
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Items" />
+    ),
+    enableSorting: false,
+    enableHiding: true,
+  }) as ColumnDef<orderSchema>,
+  columnHelper.accessor("payment_status", {
+    id: "paymentStatus",
+    cell: (info) => <span className="capitalize">{info.getValue()}</span>,
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Payment Status" />
     ),
     enableSorting: false,
     enableHiding: true,

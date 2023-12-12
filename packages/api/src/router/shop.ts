@@ -205,7 +205,7 @@ export const shopRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       console.log(input);
-      if (!ctx.stripe) return;
+      if (ctx.stripe == null) return;
       let orderByObject: object | object[] | undefined;
       if (input.sort[0]) {
         const sortObject = input.sort[0];
@@ -295,17 +295,38 @@ export const shopRouter = createTRPCRouter({
         ctx.prisma.order.count(),
       ]);
       const newDataArray = await Promise.all(
-        data.map(async (profile) => {
+        data.map(async (order) => {
           // Assuming profile.userId is the Supabase user ID
           const supabaseUser = await ctx.supabase?.auth.admin.getUserById(
-            profile.userId,
+            order.userId,
           );
           // Extract app_metadata from Supabase user
           const appMetadata = supabaseUser!.data.user!.app_metadata;
 
+          // Get Stripe data
+          const session = await ctx.stripe!.checkout.sessions.retrieve(
+            order.sessionId,
+          );
+          const payment = await ctx.stripe!.paymentIntents.retrieve(
+            order.paymentId,
+          );
+
+          const invoice = order.invoiceId
+            ? await ctx.stripe!.invoices.retrieve(order.invoiceId)
+            : null;
+
+          console.log(session);
+          console.log(payment);
+          console.log(invoice);
+
           // Combine profile data with app_metadata
           const combinedData = {
-            ...profile,
+            ...order,
+            address: session.customer_details?.address,
+            total: session.amount_total, // in cents
+            payment_status: session.payment_status,
+            hosted_invoice_url: invoice ? invoice.hosted_invoice_url : null,
+            invoice_pdf: invoice ? invoice.invoice_pdf : null,
             appMetadata: {
               AMELECO_group: appMetadata.AMELECO_group as Groups,
               AMELECO_is_staff: appMetadata.AMELECO_is_staff as boolean,
