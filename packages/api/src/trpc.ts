@@ -6,6 +6,7 @@
  * tl;dr - this is where all the tRPC server stuff is created and plugged in.
  * The pieces you will need to use are documented accordingly near the end
  */
+import type { NextApiRequest, NextApiResponse } from "next";
 import { createPagesServerClient } from "@supabase/auth-helpers-nextjs";
 import type { SupabaseClient, User } from "@supabase/auth-helpers-nextjs";
 import { createClient } from "@supabase/supabase-js";
@@ -30,6 +31,7 @@ interface CreateContextOptions {
   user: User | null;
   supabase: SupabaseClient | null;
   stripe: Stripe | null;
+  req: NextApiRequest | null;
 }
 
 /**
@@ -47,6 +49,7 @@ export const createInnerTRPCContext = (opts: CreateContextOptions) => {
     supabase: opts.supabase,
     stripe: opts.stripe,
     prisma,
+    req: opts.req,
   };
 };
 
@@ -82,6 +85,7 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
     user: user.data.user,
     supabase: serverClient,
     stripe: stripe,
+    req: opts.req,
   });
 };
 

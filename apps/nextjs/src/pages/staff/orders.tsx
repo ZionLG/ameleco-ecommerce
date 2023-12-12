@@ -7,13 +7,14 @@ import type {
 import type { z } from "zod";
 
 import type {
-  filtersStateSchema,
-  sortStateSchema,
+  filtersStateSchemaOrders,
+  sortStateSchemaOrders,
 } from "@ameleco/api/src/schemas";
 
 import { api } from "~/utils/api";
 import DashboardLayout from "~/components/DashboardLayout";
-import { columns } from "../../components/table/columns";
+import { DataTableToolbar } from "~/components/orders-table/data-table-toolbar";
+import { columns } from "../../components/orders-table/columns";
 import { DataTable } from "../../components/ui/generic-table/data-table";
 
 const sidebarNavItems = [
@@ -27,7 +28,7 @@ const sidebarNavItems = [
   },
 ];
 
-const Orders = () => {
+const Users = () => {
   const [{ pageIndex, pageSize }, setPagination] =
     React.useState<PaginationState>({
       pageIndex: 0,
@@ -44,12 +45,12 @@ const Orders = () => {
     }),
     [pageIndex, pageSize],
   );
-  const { data, isFetching } = api.auth.getUsers.useQuery(
+  const { data, isFetching } = api.shop.getOrders.useQuery(
     {
       take: pageSize,
       skip: pageIndex * pageSize,
-      filter: columnFilters as z.infer<typeof filtersStateSchema>,
-      sort: sorting as z.infer<typeof sortStateSchema>,
+      filter: columnFilters as z.infer<typeof filtersStateSchemaOrders>,
+      sort: sorting as z.infer<typeof sortStateSchemaOrders>,
     },
     {
       keepPreviousData: true,
@@ -59,8 +60,8 @@ const Orders = () => {
 
   return (
     <DashboardLayout items={sidebarNavItems}>
-      {" "}
       <DataTable
+        Toolbar={DataTableToolbar}
         data={{
           isLoading: isFetching,
           rows: data?.data,
@@ -83,4 +84,4 @@ const Orders = () => {
   );
 };
 
-export default Orders;
+export default Users;

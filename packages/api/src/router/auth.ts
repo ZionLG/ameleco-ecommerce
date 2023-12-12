@@ -7,7 +7,7 @@ import {
   PurchaseFrequency,
 } from "@ameleco/db";
 
-import { filtersStateSchema, sortStateSchema } from "../schemas";
+import { filtersStateSchemaUsers, sortStateSchemaUsers } from "../schemas";
 import {
   createTRPCRouter,
   protectedProcedure,
@@ -79,8 +79,8 @@ export const authRouter = createTRPCRouter({
       z.object({
         take: z.number().min(1).max(100),
         skip: z.number().min(0).max(100),
-        sort: sortStateSchema,
-        filter: filtersStateSchema,
+        sort: sortStateSchemaUsers,
+        filter: filtersStateSchemaUsers,
       }),
     )
     .query(async ({ ctx, input }) => {
@@ -182,7 +182,7 @@ export const authRouter = createTRPCRouter({
           where: whereObject as object,
           orderBy: orderByObject,
         }),
-        ctx.prisma.profile.count(),
+        ctx.prisma.profile.count({ where: whereObject as object }),
       ]);
       const newDataArray = await Promise.all(
         data.map(async (profile) => {

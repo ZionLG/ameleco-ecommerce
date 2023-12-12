@@ -35,7 +35,7 @@ export const productUpdateSchema = z.object({
   }),
 });
 
-export const filtersStateSchema = z.array(
+export const filtersStateSchemaUsers = z.array(
   z.object({
     id: z.enum([
       "group",
@@ -50,9 +50,22 @@ export const filtersStateSchema = z.array(
     value: z.string().or(z.array(z.string())),
   }),
 );
-export const sortStateSchema = z.array(
+export const sortStateSchemaUsers = z.array(
   z.object({
     id: z.enum(["fullName", "email", "createdAt"]),
+    desc: z.boolean(),
+  }),
+);
+
+export const filtersStateSchemaOrders = z.array(
+  z.object({
+    id: z.enum(["email", "fullName", "phone"]),
+    value: z.string().or(z.array(z.string())),
+  }),
+);
+export const sortStateSchemaOrders = z.array(
+  z.object({
+    id: z.enum(["fullName", "email", "createdAt", "total"]),
     desc: z.boolean(),
   }),
 );
