@@ -7,14 +7,15 @@ import type {
 import type { z } from "zod";
 
 import type {
-  filtersStateSchema,
-  sortStateSchema,
+  filtersStateSchemaUsers,
+  sortStateSchemaUsers,
 } from "@ameleco/api/src/schemas";
 
 import { api } from "~/utils/api";
 import DashboardLayout from "~/components/DashboardLayout";
-import { columns } from "../../components/table/columns";
+import { DataTableToolbar } from "~/components/user-table/data-table-toolbar";
 import { DataTable } from "../../components/ui/generic-table/data-table";
+import { columns } from "../../components/user-table/columns";
 
 const sidebarNavItems = [
   {
@@ -48,8 +49,8 @@ const Users = () => {
     {
       take: pageSize,
       skip: pageIndex * pageSize,
-      filter: columnFilters as z.infer<typeof filtersStateSchema>,
-      sort: sorting as z.infer<typeof sortStateSchema>,
+      filter: columnFilters as z.infer<typeof filtersStateSchemaUsers>,
+      sort: sorting as z.infer<typeof sortStateSchemaUsers>,
     },
     {
       keepPreviousData: true,
@@ -60,6 +61,7 @@ const Users = () => {
   return (
     <DashboardLayout items={sidebarNavItems}>
       <DataTable
+        Toolbar={DataTableToolbar}
         data={{
           isLoading: isFetching,
           rows: data?.data,

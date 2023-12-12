@@ -24,6 +24,7 @@ model Profile {
   businessType BusinessType? @map("business_type")
   companyName String? @map("company_name")
   cart Cart?
+  orders Order[]
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
@@ -31,7 +32,18 @@ model Profile {
   @@map("user_profile")
   @@schema("prisma")
 }
-
+model Order {
+  id                String      @id @default(dbgenerated("(uuid_generate_v4())")) @db.Uuid
+  sessionId          String @unique @map("session_id")
+  invoiceId   String? @unique  @map("invoice_id")
+  paymentId            String @unique  @map("payment_id")
+  userId String  @map("user_id")  @db.Uuid
+  user Profile @relation(fields: [userId], references: [userId])
+  createdAt         DateTime @default(now())
+  
+  @@map("order")
+  @@schema("prisma")
+}
 model Pricing {
   id     String  @id @default(dbgenerated("(uuid_generate_v4())")) @db.Uuid
   product Product?
