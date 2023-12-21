@@ -50,7 +50,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       event = stripe.webhooks.constructEvent(
         rawBody,
         signature,
-        webhookSecretTest,
+        process.env.VERCEL_URL ? webhookSecret : webhookSecretTest,
       );
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Unknown error";
