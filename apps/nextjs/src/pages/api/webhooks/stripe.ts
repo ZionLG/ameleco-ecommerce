@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import Cors from "cors";
-import { buffer } from "micro";
+import getRawBody from "raw-body";
 import Stripe from "stripe";
 
 import { prisma } from "@ameleco/db";
@@ -42,12 +42,16 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     await runMiddleware(req, res, cors);
     const signature = req.headers["stripe-signature"] as string;
 
-    const rawBody = await buffer(req);
+    const rawBody = await getRawBody(req);
 
     let event: Stripe.Event;
 
     try {
-      event = stripe.webhooks.constructEvent(rawBody, signature, webhookSecret); // change to webhookSecretTest in local test
+      event = stripe.webhooks.constructEvent(
+        rawBody,
+        signature,
+        webhookSecretTest,
+      ); // change to webhookSecretTest in local test
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Unknown error";
       // On error, log and return the error message.
