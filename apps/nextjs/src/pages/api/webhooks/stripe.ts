@@ -47,11 +47,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     let event: Stripe.Event;
 
     try {
-      event = stripe.webhooks.constructEvent(
-        rawBody,
-        signature,
-        webhookSecretTest,
-      ); // change to webhookSecretTest in local test
+      event = stripe.webhooks.constructEvent(rawBody, signature, webhookSecret); // change to webhookSecretTest in local test
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Unknown error";
       // On error, log and return the error message.
